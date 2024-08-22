@@ -23,4 +23,13 @@ pub fn build(b: *std.Build) void {
     run_cmd.step.dependOn(b.getInstallStep());
     const run_step = b.step("run", "Run the app");
     run_step.dependOn(&run_cmd.step);
+
+    const watch_cmd = b.addSystemCommand(&.{
+        "sh",
+        "-c",
+        "find src/ | entr -cr zig build run",
+    });
+    watch_cmd.step.dependOn(b.getInstallStep());
+    const watch_step = b.step("watch", "Run the app and watch for changes");
+    watch_step.dependOn(&watch_cmd.step);
 }

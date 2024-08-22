@@ -27,6 +27,8 @@
             nativeBuildInputs = with pkgs; [
                 zig
                 zls
+                # Watch
+                entr
                 # Debugging
                 gdb
                 valgrind
