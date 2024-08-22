@@ -5,14 +5,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="color-scheme" content="light" />
         <script src="/embed/htmx.min.js"></script>
+        <link rel="stylesheet" href="/embed/pico.min.css"/>
         <link rel="stylesheet" href="/embed/basscss.min.css"/>
-        <title>{s}</title>
-        {s}
+        <title>{[title]s}</title>
+        {[head]s}
     </head>
     <body class="flex flex-column" hx-boost>
         <script>0</script>
         <div id="content" class="flex-auto">
-            {s}
+            {[body]s}
         </div>
     </body>
 </html>
