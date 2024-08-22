@@ -11,8 +11,6 @@ pub fn main() !void {
     try router.serve_embedded_file("/embed/basscss.min.css", zzz.Mime.CSS, @embedFile("embed/basscss.min.css"));
     // Picocss v2.0.6
     try router.serve_embedded_file("/embed/pico.min.css", zzz.Mime.CSS, @embedFile("embed/pico.min.css"));
-    // HTMX v2.0.2
-    try router.serve_embedded_file("/embed/htmx.min.js", zzz.Mime.JS, @embedFile("embed/htmx.min.js"));
 
     try router.serve_route("/", zzz.Route.init().get(HomeHandler));
 
