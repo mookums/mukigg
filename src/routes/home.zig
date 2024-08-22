@@ -4,7 +4,7 @@ const zzz = @import("zzz");
 const HomeTemplate = @import("../templates/lib.zig").HomeTemplate;
 
 pub fn HomeHandler(_: zzz.Request, response: *zzz.Response, _: zzz.Context) void {
-    const body = HomeTemplate();
+    const body = comptime HomeTemplate();
 
     response.set(.{
         .status = .OK,
