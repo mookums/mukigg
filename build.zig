@@ -10,7 +10,7 @@ pub fn build(b: *std.Build) void {
     }).module("zzz");
 
     const exe = b.addExecutable(.{
-        .name = "mukigg",
+        .name = "website",
         .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
