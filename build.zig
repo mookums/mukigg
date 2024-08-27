@@ -1,6 +1,8 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) void {
+    const tls = b.option(bool, "tls", "Enables TLS for Server") orelse true;
+    const port = b.option(u16, "port", "Host on a given port") orelse 9862;
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
@@ -16,6 +18,11 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
+    const options = b.addOptions();
+    options.addOption(bool, "tls", tls);
+    options.addOption(u16, "port", port);
+    exe.root_module.addOptions("config", options);
+
     exe.root_module.addImport("zzz", zzz);
     b.installArtifact(exe);
 
@@ -27,7 +34,7 @@ pub fn build(b: *std.Build) void {
     const watch_cmd = b.addSystemCommand(&.{
         "sh",
         "-c",
-        "find src/ | entr -cr zig build run",
+        "find src/ | entr -cr zig build -Dtls=false -Dport=9862 run",
     });
     watch_cmd.step.dependOn(b.getInstallStep());
     const watch_step = b.step("watch", "Run the app and watch for changes");

@@ -1,6 +1,8 @@
 const std = @import("std");
 const builtin = @import("builtin");
 const zzz = @import("zzz");
+
+const config = @import("config");
 const http = zzz.HTTP;
 
 const HomeHandler = @import("routes/home.zig").HomeHandler;
@@ -20,15 +22,15 @@ pub fn main() !void {
 
     // In debug mode, just use HTTP.
     const encryption = blk: {
-        if (comptime builtin.mode == .Debug) {
-            break :blk .plain;
-        } else {
+        if (comptime config.tls) {
             break :blk .{
                 .tls = .{
                     .cert = "/etc/letsencrypt/live/muki.gg/cert.pem",
                     .key = "/etc/letsencrypt/live/muki.gg/privkey.pem",
                 },
             };
+        } else {
+            break :blk .plain;
         }
     };
 
@@ -39,7 +41,7 @@ pub fn main() !void {
     }, null);
     defer server.deinit();
 
-    try server.bind("0.0.0.0", 9862);
+    try server.bind("0.0.0.0", config.port);
     try server.listen(.{
         .router = &router,
     });
