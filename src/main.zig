@@ -1,4 +1,5 @@
 const std = @import("std");
+const builtin = @import("builtin");
 const zzz = @import("zzz");
 const http = zzz.HTTP;
 
@@ -17,9 +18,29 @@ pub fn main() !void {
 
     try router.serve_route("/", http.Route.init().get(HomeHandler));
 
-    var server = http.Server.init(.{ .allocator = allocator }, null);
+    // In debug mode, just use HTTP.
+    const encryption = blk: {
+        if (comptime builtin.mode == .Debug) {
+            break :blk .plain;
+        } else {
+            break :blk .{
+                .tls = .{
+                    .cert = "/etc/letsencrypt/live/muki.gg/cert.pem",
+                    .key = "/etc/letsencrypt/live/muki.gg/privkey.pem",
+                },
+            };
+        }
+    };
+
+    var server = http.Server.init(.{
+        .allocator = allocator,
+        .threading = .{ .multi_threaded = .auto },
+        .encryption = encryption,
+    }, null);
     defer server.deinit();
 
-    try server.bind("0.0.0.0", 8080);
-    try server.listen(.{ .router = &router });
+    try server.bind("0.0.0.0", 9862);
+    try server.listen(.{
+        .router = &router,
+    });
 }
