@@ -1,6 +1,6 @@
 const std = @import("std");
 
-pub fn build(b: *std.Build) void {
+pub fn build(b: *std.Build) !void {
     const tls = b.option(bool, "tls", "Enables TLS for Server") orelse true;
     const port = b.option(u16, "port", "Host on a given port") orelse 9862;
     const target = b.standardTargetOptions(.{});
@@ -17,6 +17,36 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
+
+    // Generate the Posts File.
+    {
+        var posts_dir = try std.fs.cwd().openDir("./src/posts/", .{ .iterate = true });
+        defer posts_dir.close();
+
+        var posts = std.ArrayList(u8).init(b.allocator);
+        defer posts.deinit();
+
+        var iter = posts_dir.iterate();
+        while (try iter.next()) |entry| {
+            if (entry.kind == .directory) {
+                const formatted = try std.fmt.allocPrint(b.allocator, "Post.load({s}),\n", .{entry.name});
+                try posts.appendSlice(formatted);
+            }
+        }
+
+        const file_fmt =
+            \\const std = @import("std");
+            \\const Post = @import("../post.zig").Post;
+            \\
+            \\pub const posts = [_]Post {{
+            \\{s}
+            \\}};
+        ;
+
+        const contents = try std.fmt.allocPrint(b.allocator, file_fmt, .{try posts.toOwnedSlice()});
+        const generate_posts = b.addWriteFile(b.pathFromRoot("src/posts/gen.zig"), contents);
+        exe.step.dependOn(&generate_posts.step);
+    }
 
     const options = b.addOptions();
     options.addOption(bool, "tls", tls);

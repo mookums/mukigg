@@ -6,6 +6,7 @@ const config = @import("config");
 const http = zzz.HTTP;
 
 const HomeHandler = @import("routes/home.zig").HomeHandler;
+const PostsHandler = @import("routes/posts.zig").PostsHandler;
 
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
@@ -19,6 +20,7 @@ pub fn main() !void {
     try router.serve_embedded_file("/embed/pico.min.css", http.Mime.CSS, @embedFile("embed/pico.min.css"));
 
     try router.serve_route("/", http.Route.init().get(HomeHandler));
+    try router.serve_route("/posts", http.Route.init().get(PostsHandler));
 
     // In debug mode, just use HTTP.
     const encryption = blk: {
