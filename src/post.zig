@@ -1,17 +1,19 @@
 const std = @import("std");
 
 pub const Post = struct {
+    id: []const u8,
     title: []const u8,
     body: []const u8,
     etag: []const u8,
 
-    pub fn load(comptime id: u32) Post {
-        const body = @embedFile(std.fmt.comptimePrint("posts/{d}/body.html", .{id}));
+    pub fn load(comptime id: []const u8) Post {
+        const body = @embedFile(std.fmt.comptimePrint("posts/{s}/body.html", .{id}));
 
         return Post{
+            .id = id,
             .title = @embedFile(
                 std.fmt.comptimePrint(
-                    "posts/{d}/title.html",
+                    "posts/{s}/title.html",
                     .{id},
                 ),
             ),

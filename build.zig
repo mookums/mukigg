@@ -33,7 +33,7 @@ pub fn build(b: *std.Build) !void {
         var iter = posts_dir.iterate();
         while (try iter.next()) |entry| {
             if (entry.kind == .directory) {
-                const formatted = try std.fmt.allocPrint(b.allocator, "Post.load({s}),\n", .{entry.name});
+                const formatted = try std.fmt.allocPrint(b.allocator, "Post.load(\"{s}\"),\n", .{entry.name});
                 try posts.appendSlice(formatted);
             }
         }
