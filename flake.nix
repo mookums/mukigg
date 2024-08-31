@@ -27,7 +27,6 @@
             nativeBuildInputs = with pkgs; [
                 zig
                 zls
-                openssl
                 # Watch
                 entr
                 # Debugging
