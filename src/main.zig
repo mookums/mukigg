@@ -28,7 +28,9 @@ pub fn main() !void {
             break :blk .{
                 .tls = .{
                     .cert = "/etc/letsencrypt/live/muki.gg/cert.pem",
+                    .cert_name = "CERTIFICATE",
                     .key = "/etc/letsencrypt/live/muki.gg/privkey.pem",
+                    .key_name = "PRIVATE KEY",
                 },
             };
         } else {
