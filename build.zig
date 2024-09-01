@@ -5,6 +5,7 @@ pub fn build(b: *std.Build) !void {
     const port = b.option(u16, "port", "Host on a given port") orelse 9862;
     const target = b.resolveTargetQuery(.{
         .cpu_arch = .x86_64,
+        .cpu_model = .baseline,
         .os_tag = .linux,
         .abi = .musl,
     });
