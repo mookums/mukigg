@@ -8,6 +8,10 @@ const http = zzz.HTTP;
 const HomeHandler = @import("routes/home.zig").HomeHandler;
 const PostsHandler = @import("routes/posts.zig").PostsHandler;
 
+pub const std_options = .{
+    .log_level = .info,
+};
+
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
 
@@ -38,10 +42,9 @@ pub fn main() !void {
         }
     };
 
-    var server = http.Server.init(.{
+    var server = http.Server(encryption).init(.{
         .allocator = allocator,
         .threading = .{ .multi_threaded = .auto },
-        .encryption = encryption,
     }, null);
     defer server.deinit();
 
