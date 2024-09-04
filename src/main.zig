@@ -31,9 +31,13 @@ pub fn main() !void {
         if (comptime config.tls) {
             break :blk .{
                 .tls = .{
-                    .cert = "/etc/letsencrypt/live/muki.gg/cert.pem",
+                    .cert = .{
+                        .file = .{ .path = "/etc/letsencrypt/live/muki.gg/cert.pem" },
+                    },
                     .cert_name = "CERTIFICATE",
-                    .key = "/etc/letsencrypt/live/muki.gg/privkey.pem",
+                    .key = .{
+                        .file = .{ .path = "/etc/letsencrypt/live/muki.gg/privkey.pem" },
+                    },
                     .key_name = "PRIVATE KEY",
                 },
             };
