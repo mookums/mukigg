@@ -1,35 +1,16 @@
 {[header]s}
 
-<main class="container">
-    <section id="about">
-        <p>hello! i'm <a href="https://github.com/mookums">muki</a>. i'm a seattle native and a graduate from the university of washington with a bachelors in computer engineering.
-        </p>
-        <p>i work on things across many domains that interest me. i love systems programming, low level languages, and functional programming. i've been loving zig recently. i'm also a motorsports fan who occasionally races a 1985 toyota mr2.
-        </p>
-    </section>
-    <section id="projects">
-        <h2>projects</h2>
-        <p>ive worked on a lot of stuff and most of it is on <a href="https://github.com/mookums">github</a>. a few that are interesting are below:</p>
-        <ul>
-            <li><a href="http://github.com/mookums/zzz">zzz</a>, an open source micro framework for building networked/web services in zig. by focusing on minimizing allocations and utilizing modern system features (eg. io_uring), it can achieve very competitive performance. you can read more <a href="/posts/zzz">here</a>. this website actually runs on zzz!
-            </li>
-            <li>dandelion, a work-in-progress plug and play solution for active aerodynamics for motorsports. by providing an extensible and modular controller, more individual or small team racers can have access to active aerodynamics. you can read more <a href="/posts/dandelion"> here</a>.
-            </li>
-            <li><a href="http://github.com/leapbunny/carter">carter</a>, an aftermarket cartridge for leapfrog devices that allow users to gain uart, microsd and root access to their devices. carter is open source, designed in kicad, and is currently available for purchase on <a href="https://kiboigo.com/item/1">kiboigo.com</a>.
-            </li>
-            <li>
-                <a href="https://github.com/uwcubesat/lost">lost</a>, an open source star tracker that i worked on during my time as the flight computer lead of the university of washington cubesat team.
-            </li>
-        </ul>
-    </section>
-    <section id="dotfiles">
-        <h2>dotfiles</h2>
-        <p>you can view all of my dotfiles <a href="https://github.com/mookums/dotfiles">here</a>.</p>
-    </section>
-    <section id="contact">
-        <h2>contact</h2>
-        <p>you can contact me at muki@[this domain]</p>
-    </section>
+<main class="flex flex-column items-center">
+    <div class="mx-auto max-width-3">
+        <section id="about">
+            <p>hello! i'm <a href="https://github.com/mookums">muki</a>. i'm a seattle native and a computer engineer. this website runs on <a href="https://github.com/mookums/zzz">zzz</a>, my micro framework for networked services.
+            </p>
+        </section>
+        <section id="posts">
+            <h2>posts</h2>
+                <ul>
+                    {[posts]s}
+                <ul>
+        </section>
+    </div>
 </main>
-
-{[footer]s}

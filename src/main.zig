@@ -20,8 +20,7 @@ pub fn main() !void {
 
     // Basscss v8.0.2
     try router.serve_embedded_file("/embed/basscss.min.css", http.Mime.CSS, @embedFile("embed/basscss.min.css"));
-    // Picocss v2.0.6
-    try router.serve_embedded_file("/embed/pico.min.css", http.Mime.CSS, @embedFile("embed/pico.min.css"));
+    try router.serve_embedded_file("/embed/muki.css", http.Mime.CSS, @embedFile("embed/muki.css"));
 
     try router.serve_route("/", http.Route.init().get(HomeHandler));
     try router.serve_route("/posts", http.Route.init().get(PostsHandler));

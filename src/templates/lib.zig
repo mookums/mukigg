@@ -2,7 +2,6 @@ const std = @import("std");
 
 const base_template = @embedFile("base.html");
 const header_template = @embedFile("components/header.html");
-const footer_template = @embedFile("components/footer.html");
 
 const BaseFields = struct {
     title: []const u8 = "",
@@ -23,7 +22,7 @@ pub fn HomeTemplate() []const u8 {
         }),
         .{
             .header = header_template,
-            .footer = footer_template,
+            .posts = "",
         },
     );
 }
@@ -39,7 +38,6 @@ pub fn PostsTemplate(allocator: std.mem.Allocator, posts: []const u8) []const u8
         }),
         .{
             .header = header_template,
-            .footer = footer_template,
             .posts = posts,
         },
     ) catch unreachable;
