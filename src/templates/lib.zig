@@ -8,37 +8,54 @@ const BaseFields = struct {
     head: []const u8 = "",
     body: []const u8 = "",
 };
+
 pub fn BaseTemplate(comptime fields: BaseFields) []const u8 {
     return std.fmt.comptimePrint(base_template, fields);
 }
 
 const home_template = @embedFile("home.html");
 
-pub fn HomeTemplate() []const u8 {
+pub fn HomeTemplate(post_entries: []const u8) []const u8 {
+    const no_posts = post_entries.len == 0;
+    const entries = if (no_posts) "<li>no posts! come back later :p</li>" else post_entries;
+
     return std.fmt.comptimePrint(
-        comptime BaseTemplate(.{
+        BaseTemplate(.{
             .title = "home | muki.gg",
             .body = home_template,
         }),
         .{
             .header = header_template,
-            .posts = "",
+            .posts = entries,
         },
     );
 }
 
-const posts_template = @embedFile("posts.html");
+const Post = @import("../post.zig").Post;
+const post_entry_template = @embedFile("components/post_entry.html");
 
-pub fn PostsTemplate(allocator: std.mem.Allocator, posts: []const u8) []const u8 {
+pub fn PostEntryTemplate(post: Post) []const u8 {
+    return std.fmt.comptimePrint(post_entry_template, .{
+        .id = post.id,
+        .name = post.name,
+        .date = post.date,
+    });
+}
+
+const post_template = @embedFile("post.html");
+
+pub fn PostTemplate(allocator: std.mem.Allocator, post: Post) []const u8 {
     return std.fmt.allocPrint(
         allocator,
-        comptime BaseTemplate(.{
-            .title = "posts | muki.gg",
-            .body = posts_template,
-        }),
+        BaseTemplate(
+            .{
+                .title = "muki.gg",
+                .body = post_template,
+            },
+        ),
         .{
             .header = header_template,
-            .posts = posts,
+            .body = post.body,
         },
     ) catch unreachable;
 }

@@ -1,5 +1,10 @@
 const std = @import("std");
 
+const PostJson = struct {
+    name: []const u8,
+    date: []const u8,
+};
+
 pub fn build(b: *std.Build) !void {
     const tls = b.option(bool, "tls", "Enables TLS for Server") orelse true;
     const port = b.option(u16, "port", "Host on a given port") orelse 9862;
@@ -34,7 +39,20 @@ pub fn build(b: *std.Build) !void {
         var iter = posts_dir.iterate();
         while (try iter.next()) |entry| {
             if (entry.kind == .directory) {
-                const formatted = try std.fmt.allocPrint(b.allocator, "Post.load(\"{s}\"),\n", .{entry.name});
+                const pj_slice = try std.fs.cwd().readFileAlloc(
+                    b.allocator,
+                    try std.fmt.allocPrint(b.allocator, "./src/posts/{s}/{s}", .{ entry.name, "post.json" }),
+                    1024 * 1024,
+                );
+                defer b.allocator.free(pj_slice);
+
+                const pj_parse = try std.json.parseFromSlice(PostJson, b.allocator, pj_slice, .{});
+                defer pj_parse.deinit();
+
+                const pj = pj_parse.value;
+                const formatted = try std.fmt.allocPrint(b.allocator, "Post.load(\"{s}\", \"{s}\", \"{s}\"),\n", .{ entry.name, pj.name, pj.date });
+                defer b.allocator.free(formatted);
+
                 try posts.appendSlice(formatted);
             }
         }

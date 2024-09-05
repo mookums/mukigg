@@ -6,7 +6,7 @@ const config = @import("config");
 const http = zzz.HTTP;
 
 const HomeHandler = @import("routes/home.zig").HomeHandler;
-const PostsHandler = @import("routes/posts.zig").PostsHandler;
+const PostHandler = @import("routes/post.zig").PostHandler;
 
 pub const std_options = .{
     .log_level = .info,
@@ -23,7 +23,7 @@ pub fn main() !void {
     try router.serve_embedded_file("/embed/muki.css", http.Mime.CSS, @embedFile("embed/muki.css"));
 
     try router.serve_route("/", http.Route.init().get(HomeHandler));
-    try router.serve_route("/posts", http.Route.init().get(PostsHandler));
+    try router.serve_route("/post/%s", http.Route.init().get(PostHandler));
 
     // In debug mode, just use HTTP.
     const encryption = blk: {
