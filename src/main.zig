@@ -22,6 +22,17 @@ pub fn main() !void {
     try router.serve_embedded_file("/embed/basscss.min.css", http.Mime.CSS, @embedFile("embed/basscss.min.css"));
     try router.serve_embedded_file("/embed/muki.css", http.Mime.CSS, @embedFile("embed/muki.css"));
 
+    // Prism for Code Highlighting
+    //
+    // Currently:
+    // - Default Theme
+    // - Toolbar
+    // - Copy to Clipboard Button
+    // - Normalize Whitespace
+    // - Zig Syntax Support
+    try router.serve_embedded_file("/embed/prism.css", http.Mime.CSS, @embedFile("embed/prism.css"));
+    try router.serve_embedded_file("/embed/prism.js", http.Mime.JS, @embedFile("embed/prism.js"));
+
     try router.serve_route("/", http.Route.init().get(HomeHandler));
     try router.serve_route("/post/%s", http.Route.init().get(PostHandler));
 

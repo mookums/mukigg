@@ -19,11 +19,22 @@ const post_bodies: [posts.len][]const u8 = blk: {
     break :blk handlers;
 };
 
-pub fn PostHandler(_: http.Request, response: *http.Response, ctx: http.Context) void {
+pub fn PostHandler(request: http.Request, response: *http.Response, ctx: http.Context) void {
     const post_id = ctx.captures[0].String;
 
     for (posts, 0..) |post, i| {
         if (std.mem.eql(u8, post.id, post_id)) {
+            if (request.headers.get("If-None-Match")) |etag| {
+                if (std.mem.eql(u8, post.etag, etag)) {
+                    response.set(.{
+                        .status = .@"Not Modified",
+                        .mime = http.Mime.HTML,
+                        .body = "",
+                    });
+                    return;
+                }
+            }
+
             response.set(.{
                 .status = .OK,
                 .mime = http.Mime.HTML,

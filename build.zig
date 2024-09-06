@@ -3,11 +3,14 @@ const std = @import("std");
 const PostJson = struct {
     name: []const u8,
     date: []const u8,
+    publish: bool,
 };
 
 pub fn build(b: *std.Build) !void {
     const tls = b.option(bool, "tls", "Enables TLS for Server") orelse true;
     const port = b.option(u16, "port", "Host on a given port") orelse 9862;
+    const dev = b.option(bool, "dev", "Enables Development Mode") orelse false;
+
     const target = b.resolveTargetQuery(.{
         .cpu_arch = .x86_64,
         .cpu_model = .baseline,
@@ -48,9 +51,25 @@ pub fn build(b: *std.Build) !void {
 
                 const pj_parse = try std.json.parseFromSlice(PostJson, b.allocator, pj_slice, .{});
                 defer pj_parse.deinit();
-
                 const pj = pj_parse.value;
-                const formatted = try std.fmt.allocPrint(b.allocator, "Post.load(\"{s}\", \"{s}\", \"{s}\"),\n", .{ entry.name, pj.name, pj.date });
+
+                if (!pj.publish and !dev) {
+                    continue;
+                }
+
+                const formatted = switch (dev) {
+                    true => try std.fmt.allocPrint(
+                        b.allocator,
+                        "Post.load(\"{s}\", \"{s} [Development]\", \"{s}\"),\n",
+                        .{ entry.name, pj.name, pj.date },
+                    ),
+                    false => try std.fmt.allocPrint(
+                        b.allocator,
+                        "Post.load(\"{s}\", \"{s}\", \"{s}\"),\n",
+                        .{ entry.name, pj.name, pj.date },
+                    ),
+                };
+
                 defer b.allocator.free(formatted);
 
                 try posts.appendSlice(formatted);
@@ -87,7 +106,7 @@ pub fn build(b: *std.Build) !void {
     const watch_cmd = b.addSystemCommand(&.{
         "sh",
         "-c",
-        "find src/ | entr -cr zig build -Dtls=false -Dport=9862 run",
+        "find src/ -type f | entr -d -cr zig build -Dtls=false -Dport=9862 -Ddev=true run",
     });
     watch_cmd.step.dependOn(b.getInstallStep());
     const watch_step = b.step("watch", "Run the app and watch for changes");
