@@ -83,6 +83,8 @@
         <p>
         The <code class="language-zig">Async</code> struct is what abstracts every backend passed to zzz.
         It contains a field, <code class="language-zig">runner: *anyopaque</code><sup>[4]</sup>, storing a pointer to whatever the internal implementation uses.
+        </p>
+        <p>
         It also contains a buffer of 256 <code class="language-zig">Completion</code> structs, each storing a result (<code class="language-zig">i32</code>) and a field,
         <code class="language-zig">context: *anyopaque</code>, for internal implementation use.
         </p>
@@ -93,8 +95,8 @@
     <section id="io_uring">
         <h3>Integrating io_uring</h3>
         <p>
-        Now that we have an idea of how we want our generic <code class="language-zig">Async</code> struct, 
-        we can design a backend using my favorite async I/O api, io_uring!
+        Now that we have an idea of what we need in our generic <code class="language-zig">Async</code> struct, 
+        we can design a backend using my favorite async I/O api, io_uring.
         </p>
         <pre style="max-width: 80vw;">
             <code class="language-zig">
@@ -150,17 +152,15 @@
         </pre>
         <p>The <code class="language-zig">AsyncIoUring</code> implementation stores an instance of a uring in the <code class="language-zig">runner: *anyopaque</code> field,
         allowing for all invocations to have access to this uring.
-        All of the internal methods all cast this pointer into an instance of the uring, and then utilize the functionality provided by the api to queue network operations.
+        This backend can then utilize the functionality provided by the io_uring api to queue network operations.
         </p>
         <p>
         These operations also utilize the <code class="language-zig">context: *anyopaque</code> field from the <code class="language-zig">Completion</code>,
         to attach user data (the internal state of this connection<sup>[5]</sup>) to the completion queue entry.
         <code class="language-zig">submit</code> and <code class="language-zig">reap</code> are self-explainatory, submitting completions or reaping and returning processed ones respectively.
         </p>
-
         <small>[5]: You can see how it is used later in the <a href="#loop">Core Loop</a> section</small>
         <br>
-
         <pre style="max-width: 80vw;">
             <code class="language-zig">
                 pub fn to_async(self: *AsyncIoUring) Async {
@@ -184,15 +184,10 @@
     <section id="loop">
         <h3>The Core Loop</h3>
         <p>
-        The core loop of zzz has a preamble of setting up the first accept and submitting it to the backend but from there on,
-        we operate entirely within this loop. We reap atleast once completion from the backend, we iterate through all of the
-        reaped completions and handle each case.
+        There is an initial preamble that is required for creating the first accept and submitting it to the backend.
+        The core loop of zzz works by reaping atleast one completion from the backend, iterating through all of the
+        reaped completions, and handling each case appropriately (and likely submitting new actions to the backend).
         </p>
-
-        <p>
-        Various implementation details have been omitted for brevity but the philsophy around the core loop remains the same. The <code class="language-zig">Provision</code> type is internal and is not important for this example but remains to highlight how the context field of the <code class="language-zig">Completion</code> is utilized.
-        </p>
-
         <pre style="max-width: 80vw">
             <code class="language-zig"> 
                 const first = ...;
@@ -226,5 +221,8 @@
                 }
             </code> 
         </pre>
+        <p>
+        Various implementation details have been omitted for brevity but the philsophy around the core loop remains the same. The <code class="language-zig">Provision</code> type is internal and is not important for this example but remains to highlight how the context field of the <code class="language-zig">Completion</code> is utilized.
+        </p>
     </section>
 </div>
