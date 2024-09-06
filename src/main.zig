@@ -7,6 +7,7 @@ const http = zzz.HTTP;
 
 const HomeHandler = @import("routes/home.zig").HomeHandler;
 const PostHandler = @import("routes/post.zig").PostHandler;
+const NotFoundHandler = @import("routes/not_found.zig").NotFoundHandler;
 
 pub const std_options = .{
     .log_level = .info,
@@ -26,8 +27,6 @@ pub fn main() !void {
     //
     // Currently:
     // - Default Theme
-    // - Toolbar
-    // - Copy to Clipboard Button
     // - Normalize Whitespace
     // - Zig Syntax Support
     try router.serve_embedded_file("/embed/prism.css", http.Mime.CSS, @embedFile("embed/prism.css"));
@@ -35,6 +34,7 @@ pub fn main() !void {
 
     try router.serve_route("/", http.Route.init().get(HomeHandler));
     try router.serve_route("/post/%s", http.Route.init().get(PostHandler));
+    try router.serve_route("/%r", http.Route.init().get(NotFoundHandler));
 
     // In debug mode, just use HTTP.
     const encryption = blk: {

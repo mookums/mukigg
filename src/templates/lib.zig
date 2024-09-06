@@ -13,6 +13,21 @@ pub fn BaseTemplate(comptime fields: BaseFields) []const u8 {
     return std.fmt.comptimePrint(base_template, fields);
 }
 
+const not_found_template = @embedFile("404.html");
+
+pub fn NotFoundTemplate(comptime message: []const u8) []const u8 {
+    return std.fmt.comptimePrint(
+        BaseTemplate(.{
+            .title = "404 | muki.gg",
+            .body = not_found_template,
+        }),
+        .{
+            .header = header_template,
+            .message = message,
+        },
+    );
+}
+
 const home_template = @embedFile("home.html");
 
 pub fn HomeTemplate(comptime post_entries: []const u8) []const u8 {

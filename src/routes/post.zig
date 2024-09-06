@@ -8,6 +8,7 @@ const posts = @import("../posts/gen.zig").posts;
 const Post = @import("../post.zig").Post;
 const RouteHandlerFn = http.RouteHandlerFn;
 const PostTemplate = @import("../templates/lib.zig").PostTemplate;
+const NotFoundTemplate = @import("../templates/lib.zig").NotFoundTemplate;
 
 const post_bodies: [posts.len][]const u8 = blk: {
     var handlers = [_][]const u8{undefined} ** posts.len;
@@ -47,6 +48,6 @@ pub fn PostHandler(request: http.Request, response: *http.Response, ctx: http.Co
     response.set(.{
         .status = .@"Not Found",
         .mime = http.Mime.HTML,
-        .body = "",
+        .body = NotFoundTemplate("<h2 class=\"center\">404 | post not found</h2>"),
     });
 }
