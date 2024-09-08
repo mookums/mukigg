@@ -21,7 +21,7 @@ const post_bodies: [posts.len][]const u8 = blk: {
 };
 
 pub fn PostHandler(request: http.Request, response: *http.Response, ctx: http.Context) void {
-    const post_id = ctx.captures[0].String;
+    const post_id = ctx.captures[0].string;
 
     for (posts, 0..) |post, i| {
         if (std.mem.eql(u8, post.id, post_id)) {
