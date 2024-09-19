@@ -31,9 +31,12 @@ pub fn build(b: *std.Build) !void {
         .optimize = optimize,
     });
 
-    // Generate the Posts File.
     {
-        var posts_dir = try std.fs.cwd().openDir("./src/posts/", .{ .iterate = true });
+        // Generate the Posts File.
+        var posts_dir = try std.fs.cwd().openDir(
+            "./src/posts/",
+            .{ .iterate = true },
+        );
         defer posts_dir.close();
 
         var posts = std.ArrayList(u8).init(b.allocator);
@@ -44,12 +47,21 @@ pub fn build(b: *std.Build) !void {
             if (entry.kind == .directory) {
                 const pj_slice = try std.fs.cwd().readFileAlloc(
                     b.allocator,
-                    try std.fmt.allocPrint(b.allocator, "./src/posts/{s}/{s}", .{ entry.name, "post.json" }),
+                    try std.fmt.allocPrint(
+                        b.allocator,
+                        "./src/posts/{s}/{s}",
+                        .{ entry.name, "post.json" },
+                    ),
                     1024 * 1024,
                 );
                 defer b.allocator.free(pj_slice);
 
-                const pj_parse = try std.json.parseFromSlice(PostJson, b.allocator, pj_slice, .{});
+                const pj_parse = try std.json.parseFromSlice(
+                    PostJson,
+                    b.allocator,
+                    pj_slice,
+                    .{},
+                );
                 defer pj_parse.deinit();
                 const pj = pj_parse.value;
 
@@ -85,9 +97,19 @@ pub fn build(b: *std.Build) !void {
             \\}};
         ;
 
-        const contents = try std.fmt.allocPrint(b.allocator, file_fmt, .{try posts.toOwnedSlice()});
-        const generate_posts = b.addWriteFile(b.pathFromRoot("src/posts/gen.zig"), contents);
-        exe.step.dependOn(&generate_posts.step);
+        const contents = try std.fmt.allocPrint(
+            b.allocator,
+            file_fmt,
+            .{try posts.toOwnedSlice()},
+        );
+
+        const file = try posts_dir.createFile("gen.zig", .{
+            .truncate = true,
+            .lock = .exclusive,
+        });
+        defer file.close();
+
+        try file.writeAll(contents);
     }
 
     const options = b.addOptions();
