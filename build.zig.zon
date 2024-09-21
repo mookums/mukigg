@@ -5,7 +5,8 @@
 
     .dependencies = .{
         .zzz = .{
-            .path = "../zzz/",
+            .url = "git+https://github.com/mookums/zzz?ref=dynamic-completion-size#3bf8398a9ecb9cfabbabf5dd0288b95a164154b9",
+            .hash = "1220449ff454dc77e928e360bb26c29d3a3cc42efcb704ab0894bb4454b797fd7339",
         },
     },
 
