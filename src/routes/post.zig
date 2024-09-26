@@ -25,6 +25,10 @@ pub fn PostHandler(request: http.Request, response: *http.Response, ctx: http.Co
 
     for (posts, 0..) |post, i| {
         if (std.mem.eql(u8, post.id, post_id)) {
+            // Add caching headers.
+            response.headers.add("ETag", post.etag) catch unreachable;
+            response.headers.add("Cache-Control", "max-age=604800") catch unreachable;
+
             if (request.headers.get("If-None-Match")) |etag| {
                 if (std.mem.eql(u8, post.etag, etag)) {
                     response.set(.{
