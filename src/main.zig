@@ -36,7 +36,9 @@ pub fn main() !void {
 
     try router.serve_route("/", http.Route.init().get(HomeHandler));
     try router.serve_route("/post/%s", http.Route.init().get(PostHandler));
-    try router.serve_route("/%r", http.Route.init().get(NotFoundHandler));
+    try router.serve_route("/about", http.Route.init().get(NotFoundHandler));
+    try router.serve_route("/resume", http.Route.init().get(NotFoundHandler));
+    try router.serve_route("/links", http.Route.init().get(NotFoundHandler));
 
     // In debug mode, just use HTTP.
     const encryption = blk: {
