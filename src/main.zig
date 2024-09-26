@@ -14,7 +14,9 @@ pub const std_options = .{
 };
 
 pub fn main() !void {
-    const allocator = std.heap.page_allocator;
+    var gpa = std.heap.GeneralPurposeAllocator(.{ .thread_safe = true }){};
+    const allocator = gpa.allocator();
+    defer _ = gpa.deinit();
 
     var router = http.Router.init(allocator);
     defer router.deinit();
@@ -56,10 +58,10 @@ pub fn main() !void {
         }
     };
 
-    var server = http.Server(encryption).init(.{
+    var server = http.Server(encryption, .io_uring).init(.{
         .allocator = allocator,
         .threading = .{ .multi_threaded = .auto },
-    }, null);
+    });
     defer server.deinit();
 
     try server.bind("0.0.0.0", config.port);
