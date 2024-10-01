@@ -63,6 +63,7 @@ pub fn main() !void {
     var server = http.Server(encryption, .io_uring).init(.{
         .allocator = allocator,
         .threading = .{ .multi_threaded = .auto },
+        .ms_operation_max = 1 * std.time.ms_per_min,
     });
     defer server.deinit();
 
