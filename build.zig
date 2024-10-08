@@ -72,12 +72,12 @@ pub fn build(b: *std.Build) !void {
                 const formatted = switch (dev) {
                     true => try std.fmt.allocPrint(
                         b.allocator,
-                        "Post.load(\"{s}\", \"{s} [Development]\", \"{s}\"),\n",
+                        "    Post.load(\"{s}\", \"{s} [Development]\", \"{s}\"),\n",
                         .{ entry.name, pj.name, pj.date },
                     ),
                     false => try std.fmt.allocPrint(
                         b.allocator,
-                        "Post.load(\"{s}\", \"{s}\", \"{s}\"),\n",
+                        "    Post.load(\"{s}\", \"{s}\", \"{s}\"),\n",
                         .{ entry.name, pj.name, pj.date },
                     ),
                 };
@@ -92,9 +92,9 @@ pub fn build(b: *std.Build) !void {
             \\const std = @import("std");
             \\const Post = @import("../post.zig").Post;
             \\
-            \\pub const posts = [_]Post {{
-            \\{s}
-            \\}};
+            \\pub const posts = [_]Post{{
+            \\{s}}};
+            \\
         ;
 
         const contents = try std.fmt.allocPrint(
