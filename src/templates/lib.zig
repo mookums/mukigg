@@ -63,6 +63,10 @@ pub fn PostTemplate(comptime post: Post) []const u8 {
     return std.fmt.comptimePrint(
         BaseTemplate(
             .{
+                .head =
+                \\<link rel="stylesheet" href="/embed/prism.css"/>
+                \\<script src="/embed/prism.js"></script>
+                ,
                 .title = std.fmt.comptimePrint("{s} | {s}", .{ post.name, "muki.gg" }),
                 .body = post_template,
             },
