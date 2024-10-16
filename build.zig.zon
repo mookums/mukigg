@@ -5,9 +5,8 @@
 
     .dependencies = .{
         .zzz = .{
-            //.url = "git+https://github.com/mookums/zzz?ref=async-rework#917c2cac526311eddd47d132a9e0008f8a2e7af4",
-            //.hash = "1220e49cdb07b69c84dc1a23713f19cd73ff82fbe3ad6467b5230d8725ecd8fb95f5",
-            .path = "../zzz",
+            .url = "git+https://github.com/mookums/zzz?ref=tardy#18dfa3c2b047cd6f4d31d383de0960fe9da63575",
+            .hash = "122056e51824e05b329a8e7e8ee628699cb13cdac6561483fe771a1f5a6c5c1b9dad",
         },
         .tardy = .{
             .url = "git+https://github.com/mookums/tardy#3c99ca385a409642695ccb1a3309c3b7a85868f4",
