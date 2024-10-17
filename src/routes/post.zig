@@ -1,5 +1,5 @@
 const std = @import("std");
-
+const builtin = @import("builtin");
 const zzz = @import("zzz");
 const http = zzz.HTTP;
 
@@ -27,7 +27,10 @@ pub fn PostHandler(request: http.Request, response: *http.Response, ctx: http.Co
         if (std.mem.eql(u8, post.id, post_id)) {
             // Add caching headers.
             response.headers.add("ETag", post.etag) catch unreachable;
-            response.headers.add("Cache-Control", "max-age=604800") catch unreachable;
+
+            if (comptime builtin.mode != .Debug) {
+                response.headers.add("Cache-Control", "max-age=604800") catch unreachable;
+            }
 
             if (request.headers.get("If-None-Match")) |etag| {
                 if (std.mem.eql(u8, post.etag, etag)) {

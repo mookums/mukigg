@@ -5,7 +5,66 @@
             <span>Oct. 16th, 2024</span>
         </hgroup>
         <p>
-        Another post about asynchronous programming, it's all I've been really doing recently. I never originally intended to write an Asyncronous Runtime but I came upon a couple of interesting scenarios that led me down the path. While working on zzz,
+        While working on zzz, I thought about how I would trigger asynchronous events when already operating in an asynchronous context. An easy way to think about this is making a database call while inside of an HTTP request handler. Our response depends on this database call but we don't want to block execution on this thread while this query resolves.
+        </p>
+        <p>
+        As I wrote about <a href="/post/modular-async">earlier</a>, Zig doesn't have any async primitives in the language. As a result, this style of execution was not supported by zzz's event loop style and requres some higher level management of execution.
+        </p>
+        <p>
+        A language with <code class="language-rust">async/await</code> will automatically handle this case for you in a pretty interesting way.<sup>[1][2]</sup>. This allows your asynchronous code to look like synchronous code. The example below will fetch a set of items from a database and then generate an HTML fragment using a template that depends on this list of items. Behavior like this is currently impossible in zzz.
+        </p>
+        <small>[1]: <a href="https://www.eventhelix.com/rust/rust-to-assembly-async-await/">Understanding Async Await in Rust: From State Machines to Assembly Code</a></small> 
+        <br>
+        <small>[2]: <a href="https://cliffle.com/blog/async-inversion/#async-fn-is-an-inversion-of-control">How to think about async/await in Rust</a></small>
+        <br>
+        <pre style="max-width: 80vw">
+            <code class="language-rust">
+            pub async fn get_store_items(
+                Extension(db): Extension<PgPool>,
+                query: Option<Query<Pagination>>,
+            ) -> impl IntoResponse {
+                let Query(query) = query.unwrap_or_default();
+
+                let Ok(items) = sqlx::query_as!(
+                    ItemOnDisplayInner,
+                    r#"
+                    SELECT id, name, price, thumbnail_url
+                    FROM items
+                    ORDER BY entry_date DESC
+                    OFFSET $1 ROWS
+                    FETCH NEXT $2 ROWS ONLY
+                    "#,
+                    (query.page * query.per_page) as i64,
+                    query.per_page as i64,
+                )
+                .fetch_all(&db)
+                .await
+                else {
+                    return (StatusCode::NOT_FOUND, Html("".to_string()));
+                };
+
+                debug!("Store Items: {items:?}");
+                let template = ItemsTemplate {
+                    items: items.into_iter().map(|item| item.into()).collect(),
+                };
+
+                (StatusCode::OK, Html(template.render().unwrap()))
+            }
+            </code>
+        </pre>
+    </section>
+    <section id="async-io">
+        <h3>Asynchronous I/O</h3>
+        <p>
+        The nice thing about having built zzz first is that I already had a good foundation of Asynchronous I/O to work off of. As a matter of fact, the idea to migrate to a runtime came about while working on an Async rework for zzz. This Async rework brought support for epoll and a busy loop (basically just polling non-blocking sockets) to support older versions of Linux along with Mac and Windows.
+        </p>
+    <section id="scheduler">
+        <h3>Adding a Scheduler</h3>
+        <p>
+        This bundled scheduler would be cooperative and would execute to completion with "yields" only happening on I/O bounds. These "yields" would just be queueing up another I/O operation with a function pointer as usual. While simple, it is quite effective and remains fairly easy to reason about.
+        </p>
+        <p>
+        Another nicety about this scheduler model is that it provides a "green thread" implementation for free. You can manually spawn tasks into the runtime that don't depend on I/O to run concurrently.
         </p>
     </section>
 </div>
