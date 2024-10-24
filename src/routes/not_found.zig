@@ -9,6 +9,6 @@ pub fn NotFoundHandler(_: http.Request, response: *http.Response, _: http.Contex
     response.set(.{
         .status = .@"Not Found",
         .mime = http.Mime.HTML,
-        .body = NotFoundTemplate("<h2 class=\"center\">404 | not found</h2>"),
+        .body = NotFoundTemplate("<h2 class=\"center\">nothing yet...</h2>"),
     });
 }

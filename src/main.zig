@@ -17,14 +17,10 @@ const encryption = blk: {
     if (config.tls) {
         break :blk .{
             .tls = .{
-                .cert = .{
-                    .file = .{ .path = "/etc/letsencrypt/live/muki.gg/cert.pem" },
-                },
                 .cert_name = "CERTIFICATE",
-                .key = .{
-                    .file = .{ .path = "/etc/letsencrypt/live/muki.gg/privkey.pem" },
-                },
+                .cert = .{ .file = .{ .path = "/etc/letsencrypt/live/muki.gg/cert.pem" } },
                 .key_name = "PRIVATE KEY",
+                .key = .{ .file = .{ .path = "/etc/letsencrypt/live/muki.gg/privkey.pem" } },
             },
         };
     } else {
@@ -57,7 +53,7 @@ pub fn main() !void {
     try router.serve_route("/", http.Route.init().get(HomeHandler));
     try router.serve_route("/post/%s", http.Route.init().get(PostHandler));
     try router.serve_route("/about", http.Route.init().get(NotFoundHandler));
-    try router.serve_route("/resume", http.Route.init().get(NotFoundHandler));
+    try router.serve_embedded_file("/resume.pdf", http.Mime.PDF, @embedFile("embed/resume.pdf"));
     try router.serve_route("/links", http.Route.init().get(NotFoundHandler));
 
     // In debug mode, just use HTTP.
