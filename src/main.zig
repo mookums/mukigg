@@ -13,6 +13,27 @@ pub const std_options = .{
     .log_level = .info,
 };
 
+const encryption = blk: {
+    if (config.tls) {
+        break :blk .{
+            .tls = .{
+                .cert = .{
+                    .file = .{ .path = "/etc/letsencrypt/live/muki.gg/cert.pem" },
+                },
+                .cert_name = "CERTIFICATE",
+                .key = .{
+                    .file = .{ .path = "/etc/letsencrypt/live/muki.gg/privkey.pem" },
+                },
+                .key_name = "PRIVATE KEY",
+            },
+        };
+    } else {
+        break :blk .plain;
+    }
+};
+
+const http_server = http.Server(encryption, .io_uring);
+
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{ .thread_safe = true }){};
     const allocator = gpa.allocator();
@@ -40,26 +61,8 @@ pub fn main() !void {
     try router.serve_route("/links", http.Route.init().get(NotFoundHandler));
 
     // In debug mode, just use HTTP.
-    const encryption = blk: {
-        if (comptime config.tls) {
-            break :blk .{
-                .tls = .{
-                    .cert = .{
-                        .file = .{ .path = "/etc/letsencrypt/live/muki.gg/cert.pem" },
-                    },
-                    .cert_name = "CERTIFICATE",
-                    .key = .{
-                        .file = .{ .path = "/etc/letsencrypt/live/muki.gg/privkey.pem" },
-                    },
-                    .key_name = "PRIVATE KEY",
-                },
-            };
-        } else {
-            break :blk .plain;
-        }
-    };
 
-    var server = http.Server(encryption, .io_uring).init(.{
+    var server = http_server.init(.{
         .allocator = allocator,
         .threading = .auto,
     });
