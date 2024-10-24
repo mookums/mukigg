@@ -5,12 +5,8 @@
 
     .dependencies = .{
         .zzz = .{
-            .url = "git+https://github.com/mookums/zzz?ref=tardy#18dfa3c2b047cd6f4d31d383de0960fe9da63575",
-            .hash = "122056e51824e05b329a8e7e8ee628699cb13cdac6561483fe771a1f5a6c5c1b9dad",
-        },
-        .tardy = .{
-            .url = "git+https://github.com/mookums/tardy#3c99ca385a409642695ccb1a3309c3b7a85868f4",
-            .hash = "1220709159fab01f3b3125eea0d142a2d11ba0d44ba1117a6cc9ae0ed0031bb81e6d",
+            .url = "git+https://github.com/mookums/zzz?ref=v0.1.0#5fac596710d553400481b530f8049f9f7905a0d4",
+            .hash = "122093a495bcbf7c8575afbed9ac5f6755789d39d443961614d31dbb1a5009435eca",
         },
     },
 
