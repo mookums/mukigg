@@ -5,8 +5,12 @@
 
     .dependencies = .{
         .zzz = .{
-            .url = "git+https://github.com/mookums/zzz?ref=v0.1.0#5fac596710d553400481b530f8049f9f7905a0d4",
-            .hash = "122093a495bcbf7c8575afbed9ac5f6755789d39d443961614d31dbb1a5009435eca",
+            //.url = "git+https://github.com/mookums/zzz?ref=v0.1.0#5fac596710d553400481b530f8049f9f7905a0d4",
+            //.hash = "122093a495bcbf7c8575afbed9ac5f6755789d39d443961614d31dbb1a5009435eca",
+            .path = "../zzz",
+        },
+        .tardy = .{
+            .path = "../tardy",
         },
     },
 

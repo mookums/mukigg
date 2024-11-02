@@ -44,6 +44,11 @@ pub fn build(b: *std.Build) !void {
         .optimize = optimize,
     }).module("zzz");
 
+    const tardy = b.dependency("tardy", .{
+        .target = target,
+        .optimize = optimize,
+    }).module("tardy");
+
     const exe = b.addExecutable(.{
         .name = "website",
         .root_source_file = b.path("src/main.zig"),
@@ -164,6 +169,7 @@ pub fn build(b: *std.Build) !void {
     options.addOption(u16, "port", port);
     exe.root_module.addOptions("config", options);
 
+    exe.root_module.addImport("tardy", tardy);
     exe.root_module.addImport("zzz", zzz);
     b.installArtifact(exe);
 

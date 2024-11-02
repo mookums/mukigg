@@ -3,6 +3,9 @@ const builtin = @import("builtin");
 const zzz = @import("zzz");
 const http = zzz.HTTP;
 
+const Server = @import("../main.zig").Server;
+const Context = Server.Context;
+
 const posts = @import("../posts/gen.zig").posts;
 
 const Post = @import("../post.zig").Post;
@@ -20,21 +23,21 @@ const post_bodies: [posts.len][]const u8 = blk: {
     break :blk handlers;
 };
 
-pub fn PostHandler(request: http.Request, response: *http.Response, ctx: http.Context) void {
+pub fn PostHandler(ctx: *Context) void {
     const post_id = ctx.captures[0].string;
 
     for (posts, 0..) |post, i| {
         if (std.mem.eql(u8, post.id, post_id)) {
             // Add caching headers.
-            response.headers.add("ETag", post.etag) catch unreachable;
+            ctx.response.headers.add("ETag", post.etag) catch unreachable;
 
             if (comptime builtin.mode != .Debug) {
-                response.headers.add("Cache-Control", "max-age=604800") catch unreachable;
+                ctx.response.headers.add("Cache-Control", "max-age=604800") catch unreachable;
             }
 
-            if (request.headers.get("If-None-Match")) |etag| {
+            if (ctx.request.headers.get("If-None-Match")) |etag| {
                 if (std.mem.eql(u8, post.etag, etag)) {
-                    response.set(.{
+                    ctx.response.set(.{
                         .status = .@"Not Modified",
                         .mime = http.Mime.HTML,
                         .body = "",
@@ -43,18 +46,18 @@ pub fn PostHandler(request: http.Request, response: *http.Response, ctx: http.Co
                 }
             }
 
-            response.set(.{
+            ctx.respond(.{
                 .status = .OK,
                 .mime = http.Mime.HTML,
                 .body = post_bodies[i],
-            });
+            }) catch unreachable;
             return;
         }
     }
 
-    response.set(.{
+    ctx.respond(.{
         .status = .@"Not Found",
         .mime = http.Mime.HTML,
         .body = NotFoundTemplate("<h2 class=\"center\">404 | post not found</h2>"),
-    });
+    }) catch unreachable;
 }

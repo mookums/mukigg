@@ -2,12 +2,15 @@ const std = @import("std");
 const zzz = @import("zzz");
 const http = zzz.HTTP;
 
+const Server = @import("../main.zig").Server;
+const Context = Server.Context;
+
 const posts = @import("../posts/gen.zig").posts;
 
 const HomeTemplate = @import("../templates/lib.zig").HomeTemplate;
 const PostEntryTemplate = @import("../templates/lib.zig").PostEntryTemplate;
 
-pub fn HomeHandler(_: http.Request, response: *http.Response, _: http.Context) void {
+pub fn HomeHandler(ctx: *Context) void {
     const body = comptime blk: {
         var entries: []const u8 = ""[0..];
 
@@ -21,9 +24,9 @@ pub fn HomeHandler(_: http.Request, response: *http.Response, _: http.Context) v
         break :blk HomeTemplate(entries);
     };
 
-    response.set(.{
+    ctx.respond(.{
         .status = .OK,
         .mime = http.Mime.HTML,
         .body = body,
-    });
+    }) catch unreachable;
 }

@@ -1,9 +1,14 @@
 const std = @import("std");
 const builtin = @import("builtin");
+
 const zzz = @import("zzz");
+const http = zzz.HTTP;
+
+const tardy = @import("tardy");
+const Tardy = tardy.Tardy(.io_uring);
+const Runtime = tardy.Runtime;
 
 const config = @import("config");
-const http = zzz.HTTP;
 
 const HomeHandler = @import("routes/home.zig").HomeHandler;
 const PostHandler = @import("routes/post.zig").PostHandler;
@@ -28,14 +33,23 @@ const encryption = blk: {
     }
 };
 
-const http_server = http.Server(encryption, .io_uring);
+pub const Server = http.Server(encryption);
+const Context = Server.Context;
+const Router = Server.Router;
+const Route = Server.Route;
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{ .thread_safe = true }){};
     const allocator = gpa.allocator();
     defer _ = gpa.deinit();
 
-    var router = http.Router.init(allocator);
+    var t = try Tardy.init(.{
+        .allocator = allocator,
+        .threading = .auto,
+    });
+    defer t.deinit();
+
+    var router = Router.init(allocator);
     defer router.deinit();
 
     // Basscss v8.0.2
@@ -50,22 +64,25 @@ pub fn main() !void {
     try router.serve_embedded_file("/embed/prism.css", http.Mime.CSS, @embedFile("embed/prism.css"));
     try router.serve_embedded_file("/embed/prism.js", http.Mime.JS, @embedFile("embed/prism.js"));
 
-    try router.serve_route("/", http.Route.init().get(HomeHandler));
-    try router.serve_route("/post/%s", http.Route.init().get(PostHandler));
-    try router.serve_route("/about", http.Route.init().get(NotFoundHandler));
-    try router.serve_embedded_file("/resume.pdf", http.Mime.PDF, @embedFile("embed/resume.pdf"));
-    try router.serve_route("/links", http.Route.init().get(NotFoundHandler));
+    try router.serve_route("/", Route.init().get(HomeHandler));
+    try router.serve_route("/post/%s", Route.init().get(PostHandler));
+    try router.serve_route("/about", Route.init().get(NotFoundHandler));
+    try router.serve_route("/links", Route.init().get(NotFoundHandler));
 
-    // In debug mode, just use HTTP.
-
-    var server = http_server.init(.{
-        .allocator = allocator,
-        .threading = .auto,
-    });
-    defer server.deinit();
-
-    try server.bind("0.0.0.0", config.port);
-    try server.listen(.{
-        .router = &router,
-    });
+    try t.entry(
+        struct {
+            fn entry(rt: *Runtime, alloc: std.mem.Allocator, r: *const Router) !void {
+                var server = Server.init(.{ .allocator = alloc });
+                try server.bind("0.0.0.0", config.port);
+                try server.serve(r, rt);
+            }
+        }.entry,
+        &router,
+        struct {
+            fn exit(rt: *Runtime, _: std.mem.Allocator, _: void) void {
+                Server.clean(rt) catch unreachable;
+            }
+        }.exit,
+        {},
+    );
 }
