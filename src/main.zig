@@ -70,19 +70,19 @@ pub fn main() !void {
     try router.serve_route("/links", Route.init().get({}, NotFoundHandler));
 
     try t.entry(
+        &router,
         struct {
-            fn entry(rt: *Runtime, alloc: std.mem.Allocator, r: *const Router) !void {
-                var server = Server.init(.{ .allocator = alloc });
+            fn entry(rt: *Runtime, r: *const Router) !void {
+                var server = Server.init(.{ .allocator = rt.allocator });
                 try server.bind("0.0.0.0", config.port);
                 try server.serve(r, rt);
             }
         }.entry,
-        &router,
+        {},
         struct {
-            fn exit(rt: *Runtime, _: std.mem.Allocator, _: void) void {
-                Server.clean(rt) catch unreachable;
+            fn exit(rt: *Runtime, _: void) !void {
+                try Server.clean(rt);
             }
         }.exit,
-        {},
     );
 }
