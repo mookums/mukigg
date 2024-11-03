@@ -64,10 +64,10 @@ pub fn main() !void {
     try router.serve_embedded_file("/embed/prism.css", http.Mime.CSS, @embedFile("embed/prism.css"));
     try router.serve_embedded_file("/embed/prism.js", http.Mime.JS, @embedFile("embed/prism.js"));
 
-    try router.serve_route("/", Route.init().get(HomeHandler));
-    try router.serve_route("/post/%s", Route.init().get(PostHandler));
-    try router.serve_route("/about", Route.init().get(NotFoundHandler));
-    try router.serve_route("/links", Route.init().get(NotFoundHandler));
+    try router.serve_route("/", Route.init().get({}, HomeHandler));
+    try router.serve_route("/post/%s", Route.init().get({}, PostHandler));
+    try router.serve_route("/about", Route.init().get({}, NotFoundHandler));
+    try router.serve_route("/links", Route.init().get({}, NotFoundHandler));
 
     try t.entry(
         struct {

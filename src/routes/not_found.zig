@@ -8,10 +8,10 @@ const Context = Server.Context;
 
 const NotFoundTemplate = @import("../templates/lib.zig").NotFoundTemplate;
 
-pub fn NotFoundHandler(ctx: *Context) void {
-    ctx.respond(.{
+pub fn NotFoundHandler(ctx: *Context, _: void) !void {
+    try ctx.respond(.{
         .status = .@"Not Found",
         .mime = http.Mime.HTML,
         .body = NotFoundTemplate("<h2 class=\"center\">nothing yet...</h2>"),
-    }) catch unreachable;
+    });
 }

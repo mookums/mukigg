@@ -10,7 +10,7 @@ const posts = @import("../posts/gen.zig").posts;
 const HomeTemplate = @import("../templates/lib.zig").HomeTemplate;
 const PostEntryTemplate = @import("../templates/lib.zig").PostEntryTemplate;
 
-pub fn HomeHandler(ctx: *Context) void {
+pub fn HomeHandler(ctx: *Context, _: void) !void {
     const body = comptime blk: {
         var entries: []const u8 = ""[0..];
 
@@ -24,9 +24,9 @@ pub fn HomeHandler(ctx: *Context) void {
         break :blk HomeTemplate(entries);
     };
 
-    ctx.respond(.{
+    try ctx.respond(.{
         .status = .OK,
         .mime = http.Mime.HTML,
         .body = body,
-    }) catch unreachable;
+    });
 }
