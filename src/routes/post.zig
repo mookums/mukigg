@@ -37,7 +37,7 @@ pub fn PostHandler(ctx: *Context, _: void) !void {
 
             if (ctx.request.headers.get("If-None-Match")) |etag| {
                 if (std.mem.eql(u8, post.etag, etag)) {
-                    ctx.response.set(.{
+                    try ctx.respond(.{
                         .status = .@"Not Modified",
                         .mime = http.Mime.HTML,
                         .body = "",
