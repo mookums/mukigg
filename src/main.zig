@@ -43,6 +43,10 @@ pub fn main() !void {
     const allocator = gpa.allocator();
     defer _ = gpa.deinit();
 
+    const port_env = std.process.getEnvVarOwned(allocator, "PORT") catch "8080";
+    defer allocator.free(port_env);
+    const port = try std.fmt.parseInt(u16, port_env, 10);
+
     var t = try Tardy.init(.{
         .allocator = allocator,
         .threading = .auto,
@@ -68,13 +72,20 @@ pub fn main() !void {
     try router.serve_route("/post/%s", Route.init().get({}, PostHandler));
     router.serve_not_found(Route.init().get({}, NotFoundHandler));
 
+    const EntryParams = struct {
+        router: *const Router,
+        port: u16,
+    };
+
+    const params: EntryParams = .{ .router = &router, .port = port };
+
     try t.entry(
-        &router,
+        &params,
         struct {
-            fn entry(rt: *Runtime, r: *const Router) !void {
+            fn entry(rt: *Runtime, p: *const EntryParams) !void {
                 var server = Server.init(.{ .allocator = rt.allocator });
-                try server.bind("0.0.0.0", config.port);
-                try server.serve(r, rt);
+                try server.bind("0.0.0.0", p.port);
+                try server.serve(p.router, rt);
             }
         }.entry,
         {},

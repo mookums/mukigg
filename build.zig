@@ -27,8 +27,7 @@ const PostJson = struct {
 };
 
 pub fn build(b: *std.Build) !void {
-    const tls = b.option(bool, "tls", "Enables TLS for Server") orelse true;
-    const port = b.option(u16, "port", "Host on a given port") orelse 9862;
+    const tls = b.option(bool, "tls", "Enables TLS for Server") orelse false;
     const dev = b.option(bool, "dev", "Enables Development Mode") orelse false;
 
     const target = b.resolveTargetQuery(.{
@@ -50,7 +49,7 @@ pub fn build(b: *std.Build) !void {
     }).module("tardy");
 
     const exe = b.addExecutable(.{
-        .name = "website",
+        .name = "mukigg",
         .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
@@ -166,7 +165,6 @@ pub fn build(b: *std.Build) !void {
 
     const options = b.addOptions();
     options.addOption(bool, "tls", tls);
-    options.addOption(u16, "port", port);
     exe.root_module.addOptions("config", options);
 
     exe.root_module.addImport("tardy", tardy);

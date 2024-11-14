@@ -1,6 +1,13 @@
 {
   description = "The muki.gg website";
 
+  nixConfig = {
+    # Needed as zig fetch requires internet access.
+    # What we could do is pull the underlying dependency and put
+    # it in the global cache under .cache/zig/p/${hash}
+    sandbox = false;
+  };
+
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/release-24.05";
     zig.url = "github:mitchellh/zig-overlay";
@@ -16,7 +23,7 @@
           zls = inputs.zls.packages.${prev.system}.zls.overrideAttrs
             (old: { nativeBuildInputs = [ zig ]; });
 
-          mukigg = prev.callPackage ./nix/package.nix {};
+          mukigg = prev.callPackage ./nix/package.nix { };
         })
       ];
 
@@ -25,6 +32,13 @@
     in {
       packages.default = pkgs.mukigg;
       packages.mukigg = pkgs.mukigg;
+
+      nixosModules.default = { config, lib, pkgs, ... }: {
+        imports = [ ./nix/service.nix ];
+        nixpkgs.overlays = overlays;
+      };
+
+      nixosModules.mukigg = self.nixosModules.default;
 
       devShells.${system}.default = pkgs.mkShell {
         nativeBuildInputs = with pkgs; [

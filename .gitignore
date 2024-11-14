@@ -1,4 +1,4 @@
 .zig-cache
 zig-out
 src/posts/gen.zig
-result/
+result

@@ -14,6 +14,7 @@ stdenvNoCC.mkDerivation {
 
   preBuild = ''
     export HOME=$TMPDIR
+    zig build --fetch --prefix $out
   '';
 
   buildPhase = ''
@@ -21,9 +22,7 @@ stdenvNoCC.mkDerivation {
 
   installPhase = ''
     mkdir -p $out/bin
-    #zig build -Doptimize=ReleaseFast -Dtls=true -Dport=443 --prefix $out
-    zig build -Doptimize=Debug -Dtls=false -Dport=9862 --prefix $out
-    mv $out/bin/website $out/bin/mukigg
+    zig build -Doptimize=ReleaseSafe --prefix $out
   '';
 
   outputs = [ "out" ];
