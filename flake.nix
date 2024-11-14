@@ -1,41 +1,45 @@
 {
-    description = "muki.gg is my website, built using zzz";
+  description = "The muki.gg website";
 
-    inputs = {
-        nixpkgs.url = "github:nixos/nixpkgs/release-24.05";
-        zig.url = "github:mitchellh/zig-overlay";
-        zls.url = "github:zigtools/zls/0.13.0";
-    };
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/release-24.05";
+    zig.url = "github:mitchellh/zig-overlay";
+    zls.url = "github:zigtools/zls/0.13.0";
+  };
 
-    outputs = inputs@{self, nixpkgs, ...}: 
+  outputs = inputs@{ self, nixpkgs, ... }:
     let
-        overlays = [
-            (final: prev: rec {
-                zigpkgs = inputs.zig.packages.${prev.system};
-                zig = zigpkgs."0.13.0";
-                zls = inputs.zls.packages.${prev.system}.zls.overrideAttrs (old: {
-                    nativeBuildInputs = [ zig ];
-                });
-            })
-        ];
+      overlays = [
+        (final: prev: rec {
+          zigpkgs = inputs.zig.packages.${prev.system};
+          zig = zigpkgs."0.13.0";
+          zls = inputs.zls.packages.${prev.system}.zls.overrideAttrs
+            (old: { nativeBuildInputs = [ zig ]; });
 
-        system = "x86_64-linux";
-        pkgs = import nixpkgs { inherit overlays system; };
-    in
-    {
-        devShells.${system}.default = pkgs.mkShell {
-            nativeBuildInputs = with pkgs; [
-                zig
-                zls
-                # Watch
-                entr
-                # Debugging
-                gdb
-                valgrind
-                # Benchmarking
-                linuxPackages.perf
-                wrk
-            ];
-        };
+          mukigg = prev.callPackage ./nix/package.nix {};
+        })
+      ];
+
+      system = "x86_64-linux";
+      pkgs = import nixpkgs { inherit overlays system; };
+    in {
+      packages.default = pkgs.mukigg;
+      packages.mukigg = pkgs.mukigg;
+
+      devShells.${system}.default = pkgs.mkShell {
+        nativeBuildInputs = with pkgs; [
+          zig
+          zls
+          # Watch
+          entr
+          # Debugging
+          gdb
+          valgrind
+          # Benchmarking
+          linuxPackages.perf
+          wrk
+        ];
+      };
+
     };
 }

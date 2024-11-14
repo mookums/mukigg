@@ -66,8 +66,7 @@ pub fn main() !void {
 
     try router.serve_route("/", Route.init().get({}, HomeHandler));
     try router.serve_route("/post/%s", Route.init().get({}, PostHandler));
-    try router.serve_route("/about", Route.init().get({}, NotFoundHandler));
-    try router.serve_route("/links", Route.init().get({}, NotFoundHandler));
+    router.serve_not_found(Route.init().get({}, NotFoundHandler));
 
     try t.entry(
         &router,
