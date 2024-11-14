@@ -43,6 +43,8 @@ pub fn main() !void {
     const allocator = gpa.allocator();
     defer _ = gpa.deinit();
 
+    const addr = std.process.getEnvVarOwned(allocator, "ADDR") catch "0.0.0.0";
+    defer allocator.free(addr);
     const port_env = std.process.getEnvVarOwned(allocator, "PORT") catch "8080";
     defer allocator.free(port_env);
     const port = try std.fmt.parseInt(u16, port_env, 10);
@@ -74,17 +76,22 @@ pub fn main() !void {
 
     const EntryParams = struct {
         router: *const Router,
+        addr: []const u8,
         port: u16,
     };
 
-    const params: EntryParams = .{ .router = &router, .port = port };
+    const params: EntryParams = .{
+        .router = &router,
+        .addr = addr,
+        .port = port,
+    };
 
     try t.entry(
         &params,
         struct {
             fn entry(rt: *Runtime, p: *const EntryParams) !void {
                 var server = Server.init(.{ .allocator = rt.allocator });
-                try server.bind("0.0.0.0", p.port);
+                try server.bind(p.addr, p.port);
                 try server.serve(p.router, rt);
             }
         }.entry,
