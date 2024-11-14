@@ -55,7 +55,7 @@ in {
 
       environment = {
         PORT = toString cfg.port;
-        ADDR = config.addr;
+        ADDR = cfg.addr;
       };
 
       serviceConfig = {
