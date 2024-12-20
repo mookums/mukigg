@@ -78,7 +78,7 @@
               Type = "simple";
               User = cfg.user;
               Group = cfg.group;
-              ExecStart = "${pkgs.mukigg}/bin/mukigg";
+              ExecStart = "${mukiggPackage}/bin/mukigg";
               Restart = "always";
               WorkingDirectory = cfg.dataDir;
 
