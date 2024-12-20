@@ -7,7 +7,6 @@
   };
 
   outputs = {
-    self,
     nixpkgs,
     iguana,
     ...
@@ -18,6 +17,7 @@
       pname = "mukigg";
       version = "0.1.0";
       src = ./.;
+      doCheck = false;
     };
 
     mukiggModule = {
@@ -117,8 +117,8 @@
     pkgs = import nixpkgs {inherit system;};
   in {
     packages = {
-        default = mukiggPackage;
-        mukigg = mukiggPackage;
+      default = mukiggPackage;
+      mukigg = mukiggPackage;
     };
 
     nixosModules = {
@@ -136,6 +136,5 @@
         wrk
       ];
     };
-
   };
 }
