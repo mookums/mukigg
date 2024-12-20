@@ -84,7 +84,7 @@ pub fn main() !void {
         &params,
         struct {
             fn entry(rt: *Runtime, p: *const EntryParams) !void {
-                var server = Server.init(rt.allocator, .{});
+                var server = Server.init(rt.allocator, .{ .header_count_max = 64 });
                 try server.bind(.{ .ip = .{ .host = p.addr, .port = p.port } });
                 try server.serve(p.router, rt);
             }
