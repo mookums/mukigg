@@ -116,12 +116,12 @@
     system = "x86_64-linux";
     pkgs = import nixpkgs {inherit system;};
   in {
-    packages = {
+    packages.${system} = {
       default = mukiggPackage;
       mukigg = mukiggPackage;
     };
 
-    nixosModules = {
+    nixosModules.${system} = {
       default = mukiggModule;
       mukigg = mukiggModule;
     };
