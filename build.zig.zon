@@ -1,16 +1,12 @@
 .{
-    .name = "website",
+    .name = "mukigg",
     .version = "0.1.0",
     .minimum_zig_version = "0.13.0",
 
     .dependencies = .{
         .zzz = .{
-            .url = "git+https://github.com/mookums/zzz?ref=router-update#9ae76961a8d02543e4fd3056309d7c2c2d7fc8d5",
-            .hash = "12207c0ecbee6fbf7c98ecfb639bda9c57ce744c793ceb8cf6025adf750faf45addb",
-        },
-        .tardy = .{
-            .url = "git+https://github.com/mookums/tardy?ref=v0.1.0#ae0970d6b3fa5b03625b14e142c664efe1fd7789",
-            .hash = "12207f5afee3b8933c1c32737e8feedc80a2e4feebe058739509094c812e4a8d2cc8",
+            .url = "git+https://github.com/mookums/zzz#2e3ac65a45a1710af1ea9741c06221a0a3fbc553",
+            .hash = "1220943f4783f460f82c8ed765cf4a27f50f080bce16e39ce87b329e69e70f518506",
         },
     },
 

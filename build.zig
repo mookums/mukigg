@@ -27,26 +27,15 @@ const PostJson = struct {
 };
 
 pub fn build(b: *std.Build) !void {
-    const tls = b.option(bool, "tls", "Enables TLS for Server") orelse false;
     const dev = b.option(bool, "dev", "Enables Development Mode") orelse false;
 
-    const target = b.resolveTargetQuery(.{
-        .cpu_arch = .x86_64,
-        .cpu_model = .baseline,
-        .os_tag = .linux,
-        .abi = .musl,
-    });
+    const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
     const zzz = b.dependency("zzz", .{
         .target = target,
         .optimize = optimize,
     }).module("zzz");
-
-    const tardy = b.dependency("tardy", .{
-        .target = target,
-        .optimize = optimize,
-    }).module("tardy");
 
     const exe = b.addExecutable(.{
         .name = "mukigg",
@@ -163,11 +152,6 @@ pub fn build(b: *std.Build) !void {
         try file.writeAll(contents);
     }
 
-    const options = b.addOptions();
-    options.addOption(bool, "tls", tls);
-    exe.root_module.addOptions("config", options);
-
-    exe.root_module.addImport("tardy", tardy);
     exe.root_module.addImport("zzz", zzz);
     b.installArtifact(exe);
 
@@ -179,7 +163,7 @@ pub fn build(b: *std.Build) !void {
     const watch_cmd = b.addSystemCommand(&.{
         "sh",
         "-c",
-        "find src/ -type f | entr -d -cr zig build -Dtls=false -Dport=9862 -Ddev=true run",
+        "find src/ -type f | PORT=9862 entr -d -cr zig build  -Ddev=true run",
     });
     watch_cmd.step.dependOn(b.getInstallStep());
     const watch_step = b.step("watch", "Run the app and watch for changes");

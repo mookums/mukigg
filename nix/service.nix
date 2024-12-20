@@ -7,12 +7,6 @@ in {
   options.services.mukigg = {
     enable = mkEnableOption "mukigg service";
 
-    addr = mkOption {
-      type = types.str;
-      default = "0.0.0.0";
-      description = "Addr to bind to";
-    };
-
     port = mkOption {
       type = types.port;
       default = 8080;
@@ -53,10 +47,7 @@ in {
       wantedBy = [ "multi-user.target" ];
       after = [ "network.target" ];
 
-      environment = {
-        PORT = toString cfg.port;
-        ADDR = cfg.addr;
-      };
+      environment = { PORT = toString cfg.port; };
 
       serviceConfig = {
         Type = "simple";

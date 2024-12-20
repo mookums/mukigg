@@ -23,16 +23,19 @@ const post_bodies: [posts.len][]const u8 = blk: {
     break :blk handlers;
 };
 
-pub fn PostHandler(ctx: *Context, _: void) !void {
+pub fn post_handler(ctx: *Context) !void {
     const post_id = ctx.captures[0].string;
 
     for (posts, 0..) |post, i| {
         if (std.mem.eql(u8, post.id, post_id)) {
             // Add caching headers.
-            try ctx.response.headers.add("ETag", post.etag);
+            ctx.response.headers.putAssumeCapacity("ETag", post.etag);
 
             if (comptime builtin.mode != .Debug) {
-                try ctx.response.headers.add("Cache-Control", "max-age=604800");
+                ctx.response.headers.putAssumeCapacity(
+                    "Cache-Control",
+                    "max-age=604800",
+                );
             }
 
             if (ctx.request.headers.get("If-None-Match")) |etag| {

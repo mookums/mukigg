@@ -8,7 +8,7 @@ const Context = Server.Context;
 
 const NotFoundTemplate = @import("../templates/lib.zig").NotFoundTemplate;
 
-pub fn NotFoundHandler(ctx: *Context, _: void) !void {
+pub fn not_found_handler(ctx: *Context) !void {
     try ctx.respond(.{
         .status = .@"Not Found",
         .mime = http.Mime.HTML,

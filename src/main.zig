@@ -4,36 +4,19 @@ const builtin = @import("builtin");
 const zzz = @import("zzz");
 const http = zzz.HTTP;
 
-const tardy = @import("tardy");
+const tardy = zzz.tardy;
 const Tardy = tardy.Tardy(.io_uring);
 const Runtime = tardy.Runtime;
 
-const config = @import("config");
-
-const HomeHandler = @import("routes/home.zig").HomeHandler;
-const PostHandler = @import("routes/post.zig").PostHandler;
-const NotFoundHandler = @import("routes/not_found.zig").NotFoundHandler;
+const home_handler = @import("routes/home.zig").home_handler;
+const post_handler = @import("routes/post.zig").post_handler;
+const not_found_handler = @import("routes/not_found.zig").not_found_handler;
 
 pub const std_options = .{
     .log_level = .info,
 };
 
-const encryption = blk: {
-    if (config.tls) {
-        break :blk .{
-            .tls = .{
-                .cert_name = "CERTIFICATE",
-                .cert = .{ .file = .{ .path = "/etc/letsencrypt/live/muki.gg/cert.pem" } },
-                .key_name = "PRIVATE KEY",
-                .key = .{ .file = .{ .path = "/etc/letsencrypt/live/muki.gg/privkey.pem" } },
-            },
-        };
-    } else {
-        break :blk .plain;
-    }
-};
-
-pub const Server = http.Server(encryption);
+pub const Server = http.Server(.plain, void);
 const Context = Server.Context;
 const Router = Server.Router;
 const Route = Server.Route;
@@ -55,24 +38,35 @@ pub fn main() !void {
     });
     defer t.deinit();
 
-    var router = Router.init(allocator);
-    defer router.deinit();
-
-    // Basscss v8.0.2
-    try router.serve_embedded_file("/embed/basscss.min.css", http.Mime.CSS, @embedFile("embed/basscss.min.css"));
-
-    // Prism for Code Highlighting
-    //
-    // Currently:
-    // - Default Theme
-    // - Normalize Whitespace
-    // - Zig Syntax Support
-    try router.serve_embedded_file("/embed/prism.css", http.Mime.CSS, @embedFile("embed/prism.css"));
-    try router.serve_embedded_file("/embed/prism.js", http.Mime.JS, @embedFile("embed/prism.js"));
-
-    try router.serve_route("/", Route.init().get({}, HomeHandler));
-    try router.serve_route("/post/%s", Route.init().get({}, PostHandler));
-    router.serve_not_found(Route.init().get({}, NotFoundHandler));
+    var router = Router.init(
+        {},
+        &.{
+            // Basscss v8.0.2
+            Route.init("/embed/basscss.min.css").serve_embedded_file(
+                http.Mime.CSS,
+                @embedFile("embed/basscss.min.css"),
+            ),
+            // Prism for Code Highlighting
+            //
+            // Currently:
+            // - Default Theme
+            // - Normalize Whitespace
+            // - Zig Syntax Support
+            Route.init("/embed/prism.css").serve_embedded_file(
+                http.Mime.CSS,
+                @embedFile("embed/prism.css"),
+            ),
+            Route.init("/embed/prism.js").serve_embedded_file(
+                http.Mime.JS,
+                @embedFile("embed/prism.js"),
+            ),
+            Route.init("/").get(home_handler),
+            Route.init("/post/%s").get(post_handler),
+        },
+        .{
+            .not_found_handler = not_found_handler,
+        },
+    );
 
     const EntryParams = struct {
         router: *const Router,
@@ -90,8 +84,8 @@ pub fn main() !void {
         &params,
         struct {
             fn entry(rt: *Runtime, p: *const EntryParams) !void {
-                var server = Server.init(.{ .allocator = rt.allocator });
-                try server.bind(p.addr, p.port);
+                var server = Server.init(rt.allocator, .{});
+                try server.bind(.{ .ip = .{ .host = p.addr, .port = p.port } });
                 try server.serve(p.router, rt);
             }
         }.entry,

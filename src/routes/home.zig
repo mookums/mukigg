@@ -10,7 +10,7 @@ const posts = @import("../posts/gen.zig").posts;
 const HomeTemplate = @import("../templates/lib.zig").HomeTemplate;
 const PostEntryTemplate = @import("../templates/lib.zig").PostEntryTemplate;
 
-pub fn HomeHandler(ctx: *Context, _: void) !void {
+pub fn home_handler(ctx: *Context) !void {
     const body = comptime blk: {
         var entries: []const u8 = ""[0..];
 
