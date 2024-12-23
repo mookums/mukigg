@@ -16,10 +16,10 @@ pub const std_options = .{
     .log_level = .info,
 };
 
-pub const Server = http.Server(.plain, void);
-const Context = Server.Context;
-const Router = Server.Router;
-const Route = Server.Route;
+pub const Server = http.Server;
+const Context = http.Context;
+const Router = http.Router;
+const Route = http.Route;
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{ .thread_safe = true }){};
@@ -38,14 +38,14 @@ pub fn main() !void {
     });
     defer t.deinit();
 
-    var router = Router.init(
-        {},
+    var router = try Router.init(
+        allocator,
         &.{
             // Basscss v8.0.2
             Route.init("/embed/basscss.min.css").serve_embedded_file(
                 http.Mime.CSS,
                 @embedFile("embed/basscss.min.css"),
-            ),
+            ).layer(),
             // Prism for Code Highlighting
             //
             // Currently:
@@ -55,16 +55,16 @@ pub fn main() !void {
             Route.init("/embed/prism.css").serve_embedded_file(
                 http.Mime.CSS,
                 @embedFile("embed/prism.css"),
-            ),
+            ).layer(),
             Route.init("/embed/prism.js").serve_embedded_file(
                 http.Mime.JS,
                 @embedFile("embed/prism.js"),
-            ),
-            Route.init("/").get(home_handler),
-            Route.init("/post/%s").get(post_handler),
+            ).layer(),
+            Route.init("/").get({}, home_handler).layer(),
+            Route.init("/post/%s").get({}, post_handler).layer(),
         },
         .{
-            .not_found_handler = not_found_handler,
+            .not_found = not_found_handler,
         },
     );
 

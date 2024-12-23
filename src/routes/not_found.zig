@@ -3,12 +3,11 @@ const std = @import("std");
 const zzz = @import("zzz");
 const http = zzz.HTTP;
 
-const Server = @import("../main.zig").Server;
-const Context = Server.Context;
+const Context = http.Context;
 
 const NotFoundTemplate = @import("../templates/lib.zig").NotFoundTemplate;
 
-pub fn not_found_handler(ctx: *Context) !void {
+pub fn not_found_handler(ctx: *Context, _: void) !void {
     try ctx.respond(.{
         .status = .@"Not Found",
         .mime = http.Mime.HTML,

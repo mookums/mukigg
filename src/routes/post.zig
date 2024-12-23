@@ -3,8 +3,7 @@ const builtin = @import("builtin");
 const zzz = @import("zzz");
 const http = zzz.HTTP;
 
-const Server = @import("../main.zig").Server;
-const Context = Server.Context;
+const Context = http.Context;
 
 const posts = @import("../posts/gen.zig").posts;
 
@@ -23,16 +22,16 @@ const post_bodies: [posts.len][]const u8 = blk: {
     break :blk handlers;
 };
 
-pub fn post_handler(ctx: *Context) !void {
+pub fn post_handler(ctx: *Context, _: void) !void {
     const post_id = ctx.captures[0].string;
 
     for (posts, 0..) |post, i| {
         if (std.mem.eql(u8, post.id, post_id)) {
             // Add caching headers.
-            ctx.response.headers.putAssumeCapacity("ETag", post.etag);
+            ctx.response.headers.put_assume_capacity("ETag", post.etag);
 
             if (comptime builtin.mode != .Debug) {
-                ctx.response.headers.putAssumeCapacity(
+                ctx.response.headers.put_assume_capacity(
                     "Cache-Control",
                     "max-age=604800",
                 );
