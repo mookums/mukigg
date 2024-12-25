@@ -6,6 +6,7 @@ export default defineConfig({
         compression({
             algorithm: 'gzip',
             threshold: 0,
+            deleteOriginFile: true,
         }),
     ],
     build: {
