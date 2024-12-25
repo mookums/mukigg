@@ -1,31 +1,5 @@
 const std = @import("std");
 
-const PostJson = struct {
-    name: []const u8,
-    id: []const u8,
-    date: []const u8,
-    publish: bool,
-
-    pub fn compare(lhs: PostJson, rhs: PostJson) !std.math.Order {
-        var lhs_iter = std.mem.tokenizeScalar(u8, lhs.date, '-');
-        var rhs_iter = std.mem.tokenizeScalar(u8, rhs.date, '-');
-
-        const lhs_year = try std.fmt.parseUnsigned(usize, lhs_iter.next().?, 10);
-        const rhs_year = try std.fmt.parseUnsigned(usize, rhs_iter.next().?, 10);
-        const year_order = std.math.order(lhs_year, rhs_year);
-        if (year_order != .eq) return year_order;
-
-        const lhs_month = try std.fmt.parseUnsigned(usize, lhs_iter.next().?, 10);
-        const rhs_month = try std.fmt.parseUnsigned(usize, rhs_iter.next().?, 10);
-        const month_order = std.math.order(lhs_month, rhs_month);
-        if (month_order != .eq) return month_order;
-
-        const lhs_day = try std.fmt.parseUnsigned(usize, lhs_iter.next().?, 10);
-        const rhs_day = try std.fmt.parseUnsigned(usize, rhs_iter.next().?, 10);
-        return std.math.order(lhs_day, rhs_day);
-    }
-};
-
 pub fn build(b: *std.Build) !void {
     const dev = b.option(bool, "dev", "Enables Development Mode") orelse false;
 
@@ -37,6 +11,11 @@ pub fn build(b: *std.Build) !void {
         .optimize = optimize,
     }).module("zzz");
 
+    // bundling our web assets
+    const bundle_cmd = b.addSystemCommand(&.{ "sh", "-c", "pnpm bundle" });
+    const bundle_step = b.step("bundle", "Run the bundler");
+    bundle_step.dependOn(&bundle_cmd.step);
+
     const exe = b.addExecutable(.{
         .name = "mukigg",
         .root_source_file = b.path("src/main.zig"),
@@ -44,6 +23,8 @@ pub fn build(b: *std.Build) !void {
         .optimize = optimize,
         .strip = false,
     });
+
+    exe.step.dependOn(bundle_step);
 
     {
         // Generate the Posts File.
@@ -156,16 +137,65 @@ pub fn build(b: *std.Build) !void {
     b.installArtifact(exe);
 
     const run_cmd = b.addRunArtifact(exe);
-    run_cmd.step.dependOn(b.getInstallStep());
+    run_cmd.step.dependOn(&exe.step);
     const run_step = b.step("run", "Run the app");
     run_step.dependOn(&run_cmd.step);
 
     const watch_cmd = b.addSystemCommand(&.{
         "sh",
         "-c",
-        "find src/ -type f | PORT=9862 entr -d -cr zig build  -Ddev=true run",
+        "find src/ -type f -not -path 'src/bundle/*' | PORT=9862 entr -d -cr zig build -Ddev=true run",
     });
-    watch_cmd.step.dependOn(b.getInstallStep());
     const watch_step = b.step("watch", "Run the app and watch for changes");
     watch_step.dependOn(&watch_cmd.step);
 }
+
+const PostJson = struct {
+    name: []const u8,
+    id: []const u8,
+    date: []const u8,
+    publish: bool,
+
+    pub fn compare(lhs: PostJson, rhs: PostJson) !std.math.Order {
+        var lhs_iter = std.mem.tokenizeScalar(u8, lhs.date, '-');
+        var rhs_iter = std.mem.tokenizeScalar(u8, rhs.date, '-');
+
+        const lhs_year = try std.fmt.parseUnsigned(
+            usize,
+            lhs_iter.next().?,
+            10,
+        );
+        const rhs_year = try std.fmt.parseUnsigned(
+            usize,
+            rhs_iter.next().?,
+            10,
+        );
+        const year_order = std.math.order(lhs_year, rhs_year);
+        if (year_order != .eq) return year_order;
+
+        const lhs_month = try std.fmt.parseUnsigned(
+            usize,
+            lhs_iter.next().?,
+            10,
+        );
+        const rhs_month = try std.fmt.parseUnsigned(
+            usize,
+            rhs_iter.next().?,
+            10,
+        );
+        const month_order = std.math.order(lhs_month, rhs_month);
+        if (month_order != .eq) return month_order;
+
+        const lhs_day = try std.fmt.parseUnsigned(
+            usize,
+            lhs_iter.next().?,
+            10,
+        );
+        const rhs_day = try std.fmt.parseUnsigned(
+            usize,
+            rhs_iter.next().?,
+            10,
+        );
+        return std.math.order(lhs_day, rhs_day);
+    }
+};

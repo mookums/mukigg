@@ -1,12 +1,12 @@
 .{
     .name = "mukigg",
-    .version = "0.1.0",
+    .version = "0.2.0",
     .minimum_zig_version = "0.13.0",
 
     .dependencies = .{
         .zzz = .{
-            .url = "git+https://github.com/mookums/zzz#12d05b98eb6886a980bd55fac0a307aadd2dadb9",
-            .hash = "122087bcf989614b063c4ad0123be661313123006f4b0200ababfdda6137ee9f1a82",
+            .url = "git+https://github.com/mookums/zzz#eced8cb2be035b72215e1f813170e7d4ff37d689",
+            .hash = "1220a11b4b349663170cdfe2feaa147080023f899a5d5b4bb6cb0244dd12f7b4415b",
         },
     },
 

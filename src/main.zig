@@ -41,24 +41,12 @@ pub fn main() !void {
     var router = try Router.init(
         allocator,
         &.{
-            // Basscss v8.0.2
-            Route.init("/embed/basscss.min.css").serve_embedded_file(
-                http.Mime.CSS,
-                @embedFile("embed/basscss.min.css"),
-            ).layer(),
-            // Prism for Code Highlighting
-            //
-            // Currently:
-            // - Default Theme
-            // - Normalize Whitespace
-            // - Zig Syntax Support
-            Route.init("/embed/prism.css").serve_embedded_file(
-                http.Mime.CSS,
-                @embedFile("embed/prism.css"),
-            ).layer(),
-            Route.init("/embed/prism.js").serve_embedded_file(
-                http.Mime.JS,
-                @embedFile("embed/prism.js"),
+            Route.init("embed/bundle.js").embed_file(
+                .{
+                    .encoding = .gzip,
+                    .mime = http.Mime.JS,
+                },
+                @embedFile("bundle/bundle.js.gz"),
             ).layer(),
             Route.init("/").get({}, home_handler).layer(),
             Route.init("/post/%s").get({}, post_handler).layer(),

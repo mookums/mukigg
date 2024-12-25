@@ -2,7 +2,7 @@
   description = "The muki.gg website";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/release-24.05";
+    nixpkgs.url = "github:nixos/nixpkgs/release-24.11";
     iguana.url = "github:mookums/iguana";
   };
 
@@ -135,10 +135,13 @@
       withZls = true;
 
       extraPackages = with pkgs; [
+        # JS Tooling
+        nodejs_22
+        pnpm
+        typescript
+        typescript-language-server
         # Watch
         entr
-        # Benchmarking
-        wrk
       ];
     };
   };
