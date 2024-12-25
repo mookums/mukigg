@@ -3,4 +3,4 @@ zig-out
 src/posts/gen.zig
 result
 node_modules
-src/bundle/*.js
+src/bundle

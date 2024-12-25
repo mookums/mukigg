@@ -11,13 +11,45 @@
     iguana,
     ...
   }: let
+    system = "x86_64-linux";
+    pkgs = import nixpkgs {inherit system;};
+
     iguanaLib = iguana.lib.${system};
+
+    jsBundle = pkgs.stdenv.mkDerivation (finalAttrs: {
+      pname = "mukigg-js";
+      version = "0.2.0";
+      src = ./.;
+
+      nativeBuildInputs = with pkgs; [
+        nodejs
+        pnpm.configHook
+      ];
+
+      installPhase = ''
+        pnpm install --offline --frozen-lockfile
+        pnpm bundle
+        mkdir -p $out
+        cp -r ./src/bundle/* $out/
+      '';
+
+      pnpmDeps = pkgs.pnpm.fetchDeps {
+        inherit (finalAttrs) pname version src;
+        hash = "sha256-a+vu6bOTsYcSL6ztiRJIZUjVb6jD/rNB302fbrOM86Y=";
+      };
+    });
 
     mukiggPackage = iguanaLib.mkZigPackage {
       pname = "mukigg";
       version = "0.2.0";
       src = ./.;
       doCheck = false;
+
+      preBuild = ''
+        # Link the node_modules
+        mkdir -p ./src/bundle/
+        cp -r ${jsBundle}/* ./src/bundle/
+      '';
 
       nativeBuildInputs = with pkgs; [
         nodejs
@@ -117,9 +149,6 @@
           };
         };
       };
-
-    system = "x86_64-linux";
-    pkgs = import nixpkgs {inherit system;};
   in {
     packages = {
       default = mukiggPackage;
