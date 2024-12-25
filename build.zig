@@ -3,6 +3,7 @@ const std = @import("std");
 pub fn build(b: *std.Build) !void {
     const bundle = b.option(bool, "bundle", "Rebuild the bundled JS") orelse false;
     const dev = b.option(bool, "dev", "Enables Development Mode") orelse false;
+    try create_posts_file(b, dev);
 
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
@@ -34,113 +35,6 @@ pub fn build(b: *std.Build) !void {
         exe.step.dependOn(bundle_step);
     }
 
-    {
-        // Generate the Posts File.
-        var posts_dir = try std.fs.cwd().openDir(
-            "./src/posts/",
-            .{ .iterate = true },
-        );
-        defer posts_dir.close();
-
-        var posts = std.ArrayList(u8).init(b.allocator);
-        defer posts.deinit();
-
-        var postjsons = std.ArrayList(PostJson).init(b.allocator);
-        defer postjsons.deinit();
-
-        var iter = posts_dir.iterate();
-        while (try iter.next()) |entry| {
-            if (entry.kind == .directory) {
-                // read the post json
-                const pj_slice = try std.fs.cwd().readFileAlloc(
-                    b.allocator,
-                    try std.fmt.allocPrint(
-                        b.allocator,
-                        "./src/posts/{s}/{s}",
-                        .{ entry.name, "post.json" },
-                    ),
-                    1024 * 1024,
-                );
-                defer b.allocator.free(pj_slice);
-
-                // parse the post json
-                const pj_parse = try std.json.parseFromSlice(
-                    PostJson,
-                    b.allocator,
-                    pj_slice,
-                    .{},
-                );
-                defer pj_parse.deinit();
-
-                const pj_clone = PostJson{
-                    .name = try b.allocator.dupe(u8, pj_parse.value.name),
-                    .id = try b.allocator.dupe(u8, pj_parse.value.id),
-                    .date = try b.allocator.dupe(u8, pj_parse.value.date),
-                    .publish = pj_parse.value.publish,
-                };
-
-                try postjsons.append(pj_clone);
-            }
-        }
-
-        // sort by date so newest are higher.
-        std.sort.pdq(PostJson, postjsons.items, {}, struct {
-            fn less_than(_: void, lhs: PostJson, rhs: PostJson) bool {
-                return (PostJson.compare(lhs, rhs) catch unreachable) == .gt;
-            }
-        }.less_than);
-
-        for (postjsons.items) |pj| {
-            // if not published and we aren't developing,
-            // just skip these.
-            if (!pj.publish and !dev) {
-                continue;
-            }
-
-            // format the post.load line
-            const formatted = switch (dev and !pj.publish) {
-                true => try std.fmt.allocPrint(
-                    b.allocator,
-                    "    Post.load(\"{s}\", \"{s} [Work In Progress]\", \"{s}\"),\n",
-                    .{ pj.id, pj.name, pj.date },
-                ),
-                false => try std.fmt.allocPrint(
-                    b.allocator,
-                    "    Post.load(\"{s}\", \"{s}\", \"{s}\"),\n",
-                    .{ pj.id, pj.name, pj.date },
-                ),
-            };
-
-            defer b.allocator.free(formatted);
-
-            // add to set
-            try posts.appendSlice(formatted);
-        }
-
-        const file_fmt =
-            \\const std = @import("std");
-            \\const Post = @import("../post.zig").Post;
-            \\
-            \\pub const posts = [_]Post{{
-            \\{s}}};
-            \\
-        ;
-
-        const contents = try std.fmt.allocPrint(
-            b.allocator,
-            file_fmt,
-            .{try posts.toOwnedSlice()},
-        );
-
-        const file = try posts_dir.createFile("gen.zig", .{
-            .truncate = true,
-            .lock = .exclusive,
-        });
-        defer file.close();
-
-        try file.writeAll(contents);
-    }
-
     exe.root_module.addImport("zzz", zzz);
     b.installArtifact(exe);
 
@@ -156,6 +50,113 @@ pub fn build(b: *std.Build) !void {
     });
     const watch_step = b.step("watch", "Run the app and watch for changes");
     watch_step.dependOn(&watch_cmd.step);
+}
+
+pub fn create_posts_file(b: *std.Build, dev: bool) !void {
+    // Generate the Posts File.
+    var posts_dir = try std.fs.cwd().openDir(
+        "./src/posts/",
+        .{ .iterate = true },
+    );
+    defer posts_dir.close();
+
+    var posts = std.ArrayList(u8).init(b.allocator);
+    defer posts.deinit();
+
+    var postjsons = std.ArrayList(PostJson).init(b.allocator);
+    defer postjsons.deinit();
+
+    var iter = posts_dir.iterate();
+    while (try iter.next()) |entry| {
+        if (entry.kind == .directory) {
+            // read the post json
+            const pj_slice = try std.fs.cwd().readFileAlloc(
+                b.allocator,
+                try std.fmt.allocPrint(
+                    b.allocator,
+                    "./src/posts/{s}/{s}",
+                    .{ entry.name, "post.json" },
+                ),
+                1024 * 1024,
+            );
+            defer b.allocator.free(pj_slice);
+
+            // parse the post json
+            const pj_parse = try std.json.parseFromSlice(
+                PostJson,
+                b.allocator,
+                pj_slice,
+                .{},
+            );
+            defer pj_parse.deinit();
+
+            const pj_clone = PostJson{
+                .name = try b.allocator.dupe(u8, pj_parse.value.name),
+                .id = try b.allocator.dupe(u8, pj_parse.value.id),
+                .date = try b.allocator.dupe(u8, pj_parse.value.date),
+                .publish = pj_parse.value.publish,
+            };
+
+            try postjsons.append(pj_clone);
+        }
+    }
+
+    // sort by date so newest are higher.
+    std.sort.pdq(PostJson, postjsons.items, {}, struct {
+        fn less_than(_: void, lhs: PostJson, rhs: PostJson) bool {
+            return (PostJson.compare(lhs, rhs) catch unreachable) == .gt;
+        }
+    }.less_than);
+
+    for (postjsons.items) |pj| {
+        // if not published and we aren't developing,
+        // just skip these.
+        if (!pj.publish and !dev) {
+            continue;
+        }
+
+        // format the post.load line
+        const formatted = switch (dev and !pj.publish) {
+            true => try std.fmt.allocPrint(
+                b.allocator,
+                "    Post.load(\"{s}\", \"{s} [Work In Progress]\", \"{s}\"),\n",
+                .{ pj.id, pj.name, pj.date },
+            ),
+            false => try std.fmt.allocPrint(
+                b.allocator,
+                "    Post.load(\"{s}\", \"{s}\", \"{s}\"),\n",
+                .{ pj.id, pj.name, pj.date },
+            ),
+        };
+
+        defer b.allocator.free(formatted);
+
+        // add to set
+        try posts.appendSlice(formatted);
+    }
+
+    const file_fmt =
+        \\const std = @import("std");
+        \\const Post = @import("../post.zig").Post;
+        \\
+        \\pub const posts = [_]Post{{
+        \\{s}}};
+        \\
+    ;
+
+    const contents = try std.fmt.allocPrint(
+        b.allocator,
+        file_fmt,
+        .{try posts.toOwnedSlice()},
+    );
+
+    const file = try posts_dir.createFile("gen.zig", .{
+        .truncate = true,
+        .lock = .exclusive,
+    });
+    defer file.close();
+
+    try file.writeAll(contents);
 }
 
 const PostJson = struct {
