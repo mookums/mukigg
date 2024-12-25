@@ -15,9 +15,14 @@
 
     mukiggPackage = iguanaLib.mkZigPackage {
       pname = "mukigg";
-      version = "0.1.0";
+      version = "0.2.0";
       src = ./.;
       doCheck = false;
+
+      nativeBuildInputs = with pkgs; [
+        nodejs
+        pnpm
+      ];
     };
 
     mukiggModule = {
@@ -140,6 +145,7 @@
         pnpm
         typescript
         typescript-language-server
+        node2nix
         # Watch
         entr
       ];

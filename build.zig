@@ -1,6 +1,7 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) !void {
+    const bundle = b.option(bool, "bundle", "Rebuild the bundled JS") orelse false;
     const dev = b.option(bool, "dev", "Enables Development Mode") orelse false;
 
     const target = b.standardTargetOptions(.{});
@@ -11,10 +12,15 @@ pub fn build(b: *std.Build) !void {
         .optimize = optimize,
     }).module("zzz");
 
+    const fetch_cmd = b.addSystemCommand(&.{ "sh", "-c", "pnpm install" });
+    const fetch_step = b.step("fetch", "Fetch pnpm packages");
+    fetch_step.dependOn(&fetch_cmd.step);
+
     // bundling our web assets
     const bundle_cmd = b.addSystemCommand(&.{ "sh", "-c", "pnpm bundle" });
     const bundle_step = b.step("bundle", "Run the bundler");
     bundle_step.dependOn(&bundle_cmd.step);
+    bundle_step.dependOn(fetch_step);
 
     const exe = b.addExecutable(.{
         .name = "mukigg",
@@ -24,7 +30,9 @@ pub fn build(b: *std.Build) !void {
         .strip = false,
     });
 
-    exe.step.dependOn(bundle_step);
+    if (bundle) {
+        exe.step.dependOn(bundle_step);
+    }
 
     {
         // Generate the Posts File.
@@ -144,7 +152,7 @@ pub fn build(b: *std.Build) !void {
     const watch_cmd = b.addSystemCommand(&.{
         "sh",
         "-c",
-        "find src/ -type f -not -path 'src/bundle/*' | PORT=9862 entr -d -cr zig build -Ddev=true run",
+        "find src/ -type f -not -path 'src/bundle/*' | PORT=9862 entr -d -cr zig build -Dbundle=true -Ddev=true run",
     });
     const watch_step = b.step("watch", "Run the app and watch for changes");
     watch_step.dependOn(&watch_cmd.step);
