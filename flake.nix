@@ -43,6 +43,7 @@
       pname = "mukigg";
       version = "0.2.0";
       src = ./.;
+      depsHash = "sha256-S0pLxL8xOcXh0On28ekWhCIbU+l61jYMEClBU8+keaM=";
       doCheck = false;
 
       preBuild = ''
@@ -50,11 +51,6 @@
         mkdir -p ./src/bundle/
         cp -r ${jsBundle}/* ./src/bundle/
       '';
-
-      nativeBuildInputs = with pkgs; [
-        nodejs
-        pnpm
-      ];
     };
 
     mukiggModule = {

@@ -377,11 +377,11 @@
         "zls-master": "zls-master"
       },
       "locked": {
-        "lastModified": 1734161147,
-        "narHash": "sha256-MZWT0mZ0IL+rvyTepCt6tgsEJo87jOcoAu2DkU9Vj5E=",
+        "lastModified": 1735514210,
+        "narHash": "sha256-xankVqroMGOmofkEGfMS0HmSkCCMvDcyWaLqhsVjwhY=",
         "owner": "mookums",
         "repo": "iguana",
-        "rev": "b4faa5f4f1ce107fb5a8d30968facbd1b3a56762",
+        "rev": "c50e3efb8ed656d0020a9259f939faba7cc11242",
         "type": "github"
       },
       "original": {
@@ -520,11 +520,11 @@
     },
     "nixpkgs_7": {
       "locked": {
-        "lastModified": 1735092227,
-        "narHash": "sha256-Lvxr3t5FRM9yNuHJCwvVjnxT+/5h3zOt6bzQemifXCI=",
+        "lastModified": 1735510191,
+        "narHash": "sha256-/XBzPs7VDkjQC1jRt/7+g/6TBXkUHkg1/gkjBVAoW2s=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "9e6465a6975ea07eb71eed0345954c68c12d3f6c",
+        "rev": "dca39345b043209671a923e493af19b30b7f94cf",
         "type": "github"
       },
       "original": {
