@@ -5,8 +5,8 @@
 
     .dependencies = .{
         .zzz = .{
-            .url = "git+https://github.com/mookums/zzz#eced8cb2be035b72215e1f813170e7d4ff37d689",
-            .hash = "1220a11b4b349663170cdfe2feaa147080023f899a5d5b4bb6cb0244dd12f7b4415b",
+            .url = "git+https://github.com/mookums/zzz?ref=frames#04c707f99a0690c3c0cb2c31060dbd220210da74",
+            .hash = "122060b593819f015a27eeb14ca9f0ab6532ea996d3e6e81722f84736b66172c97cf",
         },
     },
 

@@ -46,7 +46,7 @@ pub fn build(b: *std.Build) !void {
     const watch_cmd = b.addSystemCommand(&.{
         "sh",
         "-c",
-        "find src/ -type f -not -path 'src/bundle/*' | PORT=9862 entr -d -cr zig build -Dbundle=true -Ddev=true run",
+        "find src/ -type f -not -path 'src/bundle/*' | ADDR='127.0.0.1' PORT=9862 entr -d -cr zig build -Dbundle=true -Ddev=true run",
     });
     const watch_step = b.step("watch", "Run the app and watch for changes");
     watch_step.dependOn(&watch_cmd.step);

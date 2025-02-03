@@ -7,6 +7,9 @@ const http = zzz.HTTP;
 const tardy = zzz.tardy;
 const Tardy = tardy.Tardy(.io_uring);
 const Runtime = tardy.Runtime;
+const Socket = tardy.Socket;
+
+const Compression = http.Middlewares.Compression;
 
 const home_handler = @import("routes/home.zig").home_handler;
 const post_handler = @import("routes/post.zig").post_handler;
@@ -26,16 +29,13 @@ pub fn main() !void {
     const allocator = gpa.allocator();
     defer _ = gpa.deinit();
 
-    const addr = std.process.getEnvVarOwned(allocator, "ADDR") catch "0.0.0.0";
+    const addr = try std.process.getEnvVarOwned(allocator, "ADDR");
     defer allocator.free(addr);
-    const port_env = std.process.getEnvVarOwned(allocator, "PORT") catch "8080";
+    const port_env = try std.process.getEnvVarOwned(allocator, "PORT");
     defer allocator.free(port_env);
     const port = try std.fmt.parseInt(u16, port_env, 10);
 
-    var t = try Tardy.init(.{
-        .allocator = allocator,
-        .threading = .auto,
-    });
+    var t = try Tardy.init(allocator, .{ .threading = .auto });
     defer t.deinit();
 
     var router = try Router.init(
@@ -48,6 +48,7 @@ pub fn main() !void {
                 },
                 @embedFile("bundle/bundle.js.gz"),
             ).layer(),
+            Compression(.{ .gzip = .{} }),
             Route.init("/").get({}, home_handler).layer(),
             Route.init("/post/%s").get({}, post_handler).layer(),
         },
@@ -56,32 +57,23 @@ pub fn main() !void {
         },
     );
 
-    const EntryParams = struct {
-        router: *const Router,
-        addr: []const u8,
-        port: u16,
-    };
+    var socket = try Socket.init(.{ .tcp = .{ .host = addr, .port = port } });
+    defer socket.close_blocking();
+    try socket.bind();
+    try socket.listen(1024);
 
-    const params: EntryParams = .{
-        .router = &router,
-        .addr = addr,
-        .port = port,
-    };
+    const EntryParams = struct { router: *const Router, socket: Socket };
 
     try t.entry(
-        &params,
+        EntryParams{ .router = &router, .socket = socket },
         struct {
-            fn entry(rt: *Runtime, p: *const EntryParams) !void {
-                var server = Server.init(rt.allocator, .{ .header_count_max = 64 });
-                try server.bind(.{ .ip = .{ .host = p.addr, .port = p.port } });
-                try server.serve(p.router, rt);
+            fn entry(rt: *Runtime, p: EntryParams) !void {
+                var server = Server.init(rt.allocator, .{
+                    .stack_size = 1024 * 1024 * 4,
+                    .header_count_max = 64,
+                });
+                try server.serve(rt, p.router, p.socket);
             }
         }.entry,
-        {},
-        struct {
-            fn exit(rt: *Runtime, _: void) !void {
-                try Server.clean(rt);
-            }
-        }.exit,
     );
 }

@@ -43,7 +43,7 @@
       pname = "mukigg";
       version = "0.2.0";
       src = ./.;
-      depsHash = "sha256-S0pLxL8xOcXh0On28ekWhCIbU+l61jYMEClBU8+keaM=";
+      depsHash = "sha256-xxVpg0cmrpn7HlA4Lqy/oylj8YEl5PuTjbZcg3lfPso=";
       doCheck = false;
 
       preBuild = ''

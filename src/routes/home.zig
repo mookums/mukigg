@@ -3,13 +3,14 @@ const zzz = @import("zzz");
 const http = zzz.HTTP;
 
 const Context = http.Context;
+const Respond = http.Respond;
 
 const posts = @import("../posts/gen.zig").posts;
 
 const HomeTemplate = @import("../templates/lib.zig").HomeTemplate;
 const PostEntryTemplate = @import("../templates/lib.zig").PostEntryTemplate;
 
-pub fn home_handler(ctx: *Context, _: void) !void {
+pub fn home_handler(_: *const Context, _: void) !Respond {
     const body = comptime blk: {
         var entries: []const u8 = ""[0..];
 
@@ -23,9 +24,9 @@ pub fn home_handler(ctx: *Context, _: void) !void {
         break :blk HomeTemplate(entries);
     };
 
-    try ctx.respond(.{
+    return Respond{ .standard = .{
         .status = .OK,
         .mime = http.Mime.HTML,
         .body = body,
-    });
+    } };
 }
