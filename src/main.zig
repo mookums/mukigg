@@ -15,9 +15,7 @@ const home_handler = @import("routes/home.zig").home_handler;
 const post_handler = @import("routes/post.zig").post_handler;
 const not_found_handler = @import("routes/not_found.zig").not_found_handler;
 
-pub const std_options = .{
-    .log_level = .info,
-};
+pub const std_options = .{ .log_level = .info };
 
 pub const Server = http.Server;
 const Context = http.Context;
@@ -42,11 +40,12 @@ pub fn main() !void {
         allocator,
         &.{
             Route.init("embed/bundle.js").embed_file(
-                .{
-                    .encoding = .gzip,
-                    .mime = http.Mime.JS,
-                },
+                .{ .encoding = .gzip, .mime = http.Mime.JS },
                 @embedFile("bundle/bundle.js.gz"),
+            ).layer(),
+            Route.init("embed/bundle.css").embed_file(
+                .{ .encoding = .gzip, .mime = http.Mime.CSS },
+                @embedFile("bundle/bundle.css.gz"),
             ).layer(),
             Compression(.{ .gzip = .{} }),
             Route.init("/").get({}, home_handler).layer(),

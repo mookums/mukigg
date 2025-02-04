@@ -1,8 +1,10 @@
 import { defineConfig } from 'vite';
 import compression from 'vite-plugin-compression';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
     plugins: [
+        tailwindcss(),
         compression({
             algorithm: 'gzip',
             threshold: 0,
@@ -10,15 +12,18 @@ export default defineConfig({
         }),
     ],
     build: {
+        cssCodeSplit: false,
         outDir: 'src/bundle',
-        //emptyOutDir: true,
-        rollupOptions: {
-            input: 'src/index.js',
-            output: {
-                format: 'iife',
-                entryFileNames: 'bundle.js',
-            },
+        lib: {
+            entry: 'src/web/index.js',
+            name: 'mukigg',
+            formats: ['iife'],
+            fileName: () => 'bundle.js'
         },
+        rollupOptions: {
+            output: {
+                assetFileNames: 'bundle.[ext]',
+            }
+        }
     },
 });
-
