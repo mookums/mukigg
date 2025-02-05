@@ -12,7 +12,7 @@ const PostEntryTemplate = @import("../templates/lib.zig").PostEntryTemplate;
 
 pub fn home_handler(_: *const Context, _: void) !Respond {
     const body = comptime blk: {
-        var entries: []const u8 = ""[0..];
+        var entries: []const u8 = &.{};
 
         for (posts) |post| {
             entries = std.fmt.comptimePrint(

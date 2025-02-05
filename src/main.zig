@@ -16,6 +16,7 @@ const Compression = http.Middlewares.Compression;
 const home_handler = @import("routes/home.zig").home_handler;
 const post_handler = @import("routes/post.zig").post_handler;
 const not_found_handler = @import("routes/not_found.zig").not_found_handler;
+const rss_handler = @import("routes/rss.zig").rss_handler;
 
 pub const std_options = .{ .log_level = .info };
 
@@ -53,9 +54,12 @@ pub fn main() !void {
                 .{ .encoding = .gzip, .mime = http.Mime.CSS },
                 @embedFile("bundle/bundle.css.gz"),
             ).layer(),
+
             Compression(.{ .gzip = .{} }),
+
             Route.init("/").get({}, home_handler).layer(),
             Route.init("/post/%s").get({}, post_handler).layer(),
+            Route.init("/rss.xml").get({}, rss_handler).layer(),
         },
         .{
             .not_found = not_found_handler,
