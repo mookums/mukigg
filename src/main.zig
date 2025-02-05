@@ -9,6 +9,8 @@ const Tardy = tardy.Tardy(.io_uring);
 const Runtime = tardy.Runtime;
 const Socket = tardy.Socket;
 
+const RateLimitConfig = http.Middlewares.RateLimitConfig;
+const RateLimiting = http.Middlewares.RateLimiting;
 const Compression = http.Middlewares.Compression;
 
 const home_handler = @import("routes/home.zig").home_handler;
@@ -36,9 +38,13 @@ pub fn main() !void {
     var t = try Tardy.init(allocator, .{ .threading = .auto });
     defer t.deinit();
 
+    var config = RateLimitConfig.init(allocator, 5, 30, null);
+    defer config.deinit();
+
     var router = try Router.init(
         allocator,
         &.{
+            RateLimiting(&config),
             Route.init("embed/bundle.js").embed_file(
                 .{ .encoding = .gzip, .mime = http.Mime.JS },
                 @embedFile("bundle/bundle.js.gz"),
