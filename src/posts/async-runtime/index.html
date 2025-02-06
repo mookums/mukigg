@@ -61,7 +61,7 @@
     </section>
     <section id="async-io">
         <h3 class="text-2xl my-2 text-center md:text-left">
-            Asynchronous I/O <a class="header-anchor" href="/post/async-runtime/#intro">#</a>
+            Asynchronous I/O <a class="header-anchor" href="/post/async-runtime/#async-io">#</a>
         </h3>
         <p class="my-2">
         The nice thing about having built zzz first is that I already had a good foundation of asynchronous I/O to work off of. This asynchronous I/O provides the functionality for interacting with the filesystem and the network, by providing various queue operations.
@@ -107,7 +107,7 @@
     </section>
     <section id="scheduler">
         <h3 class="text-2xl my-2 text-center md:text-left">
-            Adding a Scheduler <a class="header-anchor" href="/post/async-runtime/#intro">#</a>
+            Adding a Scheduler <a class="header-anchor" href="/post/async-runtime/#scheduler">#</a>
         </h3>
         <p class="my-2">
         Now that we have a way to queue asynchronous I/O events and defer handling the result, we will build a scheduler. This will be a fairly simple scheduler that will run tasks to completion. 
@@ -171,7 +171,7 @@
     </section>
     <section id="echo-example">
         <h3 class="text-2xl my-2 text-center md:text-left">
-            TCP Echo Example <a class="header-anchor" href="/post/async-runtime/#intro">#</a>
+            TCP Echo Example <a class="header-anchor" href="/post/async-runtime/#echo-example">#</a>
         </h3>
         <p class="my-2">
         An easy way to do a proof of concept is to write a program that uses TCP to echo. Below will be an example program that will:
@@ -365,7 +365,7 @@
     </section>
     <section id="final-thoughts">
         <h3 class="text-2xl my-2 text-center md:text-left">
-            Final Thoughts <a class="header-anchor" href="/post/async-runtime/#intro">#</a>
+            Final Thoughts <a class="header-anchor" href="/post/async-runtime/#final-thoughts">#</a>
         </h3>
         <p class="my-2">
         While this style of asynchronous programming isn't as easy to grasp as <code class="language-rust">async/await</code>, it provides the same results while providing more intimate control over what happens where and when. This implementation was tested and is performant, resulting in effectively no performance regression when used in zzz.
