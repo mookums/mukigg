@@ -35,7 +35,7 @@
 
       pnpmDeps = pkgs.pnpm.fetchDeps {
         inherit (finalAttrs) pname version src;
-        hash = "sha256-a+vu6bOTsYcSL6ztiRJIZUjVb6jD/rNB302fbrOM86Y=";
+        hash = "sha256-B49gm+caoJxjAQZQ1WuKf5IDlcynCeS546j/grZEq4s=";
       };
     });
 
@@ -43,7 +43,7 @@
       pname = "mukigg";
       version = "0.2.0";
       src = ./.;
-      depsHash = "sha256-xxVpg0cmrpn7HlA4Lqy/oylj8YEl5PuTjbZcg3lfPso=";
+      depsHash = "sha256-8XH3I2bLP18Pg4FhabdAfFeHtFDA99KMKOM9Ckvh12g=";
       doCheck = false;
 
       preBuild = ''

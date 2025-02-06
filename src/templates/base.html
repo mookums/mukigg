@@ -4,18 +4,16 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="color-scheme" content="light" />
-        <script src="/embed/bundle.js"></script>
+        <script defer src="/embed/bundle.js"></script>
         <link href="/embed/bundle.css" rel="stylesheet" />
-        <script defer data-domain="muki.gg" src="https://analytics.muki.gg/js/script.js"></script>
+        <!-- <script defer data-domain="muki.gg" src="https://analytics.muki.gg/js/script.js"></script> -->
         <!-- Omit Favicon -->
         <link rel="icon" href="data:,">
         <title>{[title]s}</title>
         {[head]s}
     </head>
-    <body class="flex flex-col bg-[#faf9f6]">
+    <body class="flex flex-col min-h-screen justify-between bg-[#faf9f6]">
         <script>0</script>
-        <div id="content">
-            {[body]s}
-        </div>
+        {[body]s}
     </body>
 </html>

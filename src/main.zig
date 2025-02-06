@@ -59,6 +59,10 @@ pub fn main() !void {
 
             Route.init("/").get({}, home_handler).layer(),
             Route.init("/post/%s").get({}, post_handler).layer(),
+            Route.init("/muki.asc").embed_file(
+                .{ .mime = http.Mime.BIN },
+                @embedFile("static/muki.asc"),
+            ).layer(),
             Route.init("/rss.xml").get({}, rss_handler).layer(),
         },
         .{

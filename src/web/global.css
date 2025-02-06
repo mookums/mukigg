@@ -1,1 +1,18 @@
-@import "tailwindcss" source("../templates");
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+
+@import "tailwindcss";
+@source "../templates";
+@source "../posts";
+
+@theme {
+    --font-jetbrains-mono: "JetBrains Mono", mino;
+}
+
+@layer components {
+    .header-anchor {
+        @apply justify-center cursor-pointer text-sky-600 hover:underline;
+    }
+    .hyperlink {
+        @apply underline text-blue-800 hover:text-blue-800 visited:text-purple-800
+    }
+}

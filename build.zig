@@ -6,7 +6,6 @@ pub fn build(b: *std.Build) !void {
 
     const bundle = b.option(bool, "bundle", "Rebuild the bundled JS") orelse false;
     const dev = b.option(bool, "dev", "Enables Development Mode") orelse false;
-    _ = dev;
 
     const gen_posts_exe = b.addExecutable(.{
         .name = "gen-posts",
@@ -14,6 +13,10 @@ pub fn build(b: *std.Build) !void {
         .target = target,
         .optimize = optimize,
     });
+
+    const gen_posts_options = b.addOptions();
+    gen_posts_options.addOption(bool, "dev", dev);
+    gen_posts_exe.root_module.addOptions("options", gen_posts_options);
 
     const gen_posts_run = b.addRunArtifact(gen_posts_exe);
     const gen_posts_step = b.step("gen-posts", "Generate posts file");
@@ -59,5 +62,6 @@ pub fn build(b: *std.Build) !void {
         "find src/ -type f -not -path 'src/bundle/*' -not -path 'src/posts/gen.zig' | ADDR='127.0.0.1' PORT=9862 entr -d -cr zig build -Dbundle=true -Ddev=true run",
     });
     const watch_step = b.step("watch", "Run the app and watch for changes");
+    watch_step.dependOn(&exe.step);
     watch_step.dependOn(&watch_cmd.step);
 }

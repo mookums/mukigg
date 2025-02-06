@@ -1,7 +1,8 @@
 const std = @import("std");
+const options = @import("options");
 
 pub fn main() !void {
-    const dev = true;
+    const dev = options.dev;
 
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     const allocator = arena.allocator();
@@ -99,10 +100,7 @@ pub fn main() !void {
         .{try posts.toOwnedSlice()},
     );
 
-    const file = try posts_dir.createFile("gen.zig", .{
-        .truncate = true,
-        .lock = .exclusive,
-    });
+    const file = try posts_dir.createFile("gen.zig", .{ .truncate = true });
     defer file.close();
 
     try file.writeAll(contents);

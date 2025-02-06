@@ -9,3 +9,7 @@ import './prism.js';
 
 // Mostly for Tailwind
 import './global.css';
+
+// Alpine
+import Alpine from 'alpinejs';
+Alpine.start();
