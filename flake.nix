@@ -65,6 +65,12 @@
         options.services.mukigg = {
           enable = mkEnableOption "mukigg service";
 
+          addr = mkOption {
+            type = types.str;
+            default = "127.0.0.1";
+            description = "Address to listen on";
+          };
+
           port = mkOption {
             type = types.port;
             default = 9862;
@@ -105,7 +111,10 @@
             wantedBy = ["multi-user.target"];
             after = ["network.target"];
 
-            environment = {PORT = toString cfg.port;};
+            environment = {
+              ADDR = cfg.addr;
+              PORT = toString cfg.port;
+            };
 
             serviceConfig = {
               Type = "simple";
