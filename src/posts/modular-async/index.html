@@ -94,7 +94,7 @@
         <code class="language-zig">context: *anyopaque</code>, for internal implementation use.
         </p>
 
-        <p class="text-small">[4]: <code class="language-zig">*anyopaque</code> is the same as <code class="language-zig">void*</code> <a class="hyperlink" href="https://zig.guide/working-with-c/c-primitive-types/">in C</a></p>.
+        <p class="text-sm">[4]: <code class="language-zig">*anyopaque</code> is the same as <code class="language-zig">void*</code> <a class="hyperlink" href="https://zig.guide/working-with-c/c-primitive-types/">in C</a>.</p>
     </section>
 
     <section id="io_uring">
@@ -165,7 +165,7 @@
         to attach user data (the internal state of this connection<sup>[5]</sup>) to the completion queue entry.
         <code class="language-zig">submit</code> and <code class="language-zig">reap</code> are self-explainatory, submitting completions or reaping and returning processed ones respectively.
         </p>
-        <small>[5]: You can see how it is used later in the <a href="#loop">Core Loop</a> section</small>
+        <p class="text-sm">[5]: You can see how it is used later in the <a class="hyperlink" href="#core-loop">Core Loop</a> section.</p>
         <br>
         <pre class="max-w-dvw px-[-2]">
             <code class="language-zig">
