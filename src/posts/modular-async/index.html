@@ -1,62 +1,67 @@
 <div>
-    <section id="intro">
-        <hgroup class="center py1">
-            <h2 class="mb1">Modular Async Modeling</h2>
+    <section id="title" class="mt-2 mb-4">
+        <hgroup class="flex flex-col justify-center items-center">
+            <h2 class="text-2xl mb-1 font-medium">Modular Async Modeling</h2>
             <span>Sept. 5th, 2024</span>
         </hgroup>
-        <p>
+    </section>
+    <section id="intro">
+        <h3 class="text-2xl my-2 text-center md:text-left">
+            Introduction <a class="header-anchor" href="/post/modular-async/#intro">#</a>
+        </h3>
+        <p class="my-3">
         In many modern programming languages, you usually have access to async primitives and general support for asynchronous programming. C++ has coroutines. Go has goroutines (lol). Javascript, Rust, C#, and many others have async/await.
-        This is not the case in <a class="bold" href="https://github.com/ziglang/zig/wiki/FAQ#what-is-the-status-of-async-in-zig">Zig</a> where the way to reap the benefits of async modeling is to use an event loop<sup>[1]</sup>.
+        This is <a class="hyperlink" href="https://github.com/ziglang/zig/wiki/FAQ#what-is-the-status-of-async-in-zig">not the case</a> in Zig where the way to reap the benefits of async modeling is to use an event loop<sup>[1]</sup>.
         </p>
-
-        <p>
+        <p class="my-3">
         There are a few different implementations in the Zig ecosystem, 
         such as <a class="bold" href="https://github.com/mitchellh/libxev">libxev</a>, <a class="bold" href="https://github.com/Cloudef/zig-aio">zig-aio</a>,
         and the various ones that exist for C<sup>[2][3]</sup> that can be utilized through <code class="language-zig">@cImport</code>.
         For <a class="bold" href="https://github.com/mookums/zzz">zzz</a>, the web server hosting this site, I have rolled my own to achieve very specific goals.
         </p>
 
-        <small>[1]: Some async implementations use event loops under the hood, such as <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Event_loop">Javascript</a>.</small>
-        <br>
-        <small>[2]: <a href="https://libuv.org/">libuv</a></small>
-        <br>
-        <small>[3]: <a href="https://libevent.org/">libevent</a></small>
-    </section>
+        <p class="text-sm">[1]: Some async implementations use event loops under the hood, such as <a class="hyperlink" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Event_loop">Javascript</a>.</p>
+        <p class="text-sm">[2]: <a class="hyperlink" href="https://libuv.org/">libuv</a></p>
+        <p class="text-sm">[3]: <a class="hyperlink" href="https://libevent.org/">libevent</a></p>
 
     <section id="modularity">
-        <h3>Importance of Modularity</h3>
-        <p>
+        <h3 class="text-2xl my-2 text-center md:text-left">
+            Importance of Modularity <a class="header-anchor" href="/post/modular-async/#modularity">#</a>
+        </h3>
+        <p class="my-3">
         The design of zzz is tightly coupled with the concept of portability and modularity.
         Functionality that is platform dependent, such as I/O, should support sane defaults for common platforms while also providing methods for swapping in user defined modules.
         </p>
-        <p>
+        <p class="my-3">
         One of my core goals when creating zzz was to have a networking library that operates the same, irrespective of platform.
         This modularity is core for utilization in embedded or bare metal domains where socket abstractions (and apis such as io_uring or iocp) may not exist and you must roll your own functions for handling I/O.
         This means that we must have the ability for the consumer of this library to provide their own asynchronous backends.
         </p>
     </section>
 
-    <section id="event_loop">
-        <h3>The Event Loop</h3>
-        <p>
+    <section id="event-loop">
+        <h3 class="text-2xl my-2 text-center md:text-left">
+            The Event Loop <a class="header-anchor" href="/post/modular-async/#event-loop">#</a>
+        </h3>
+        <p class="my-3">
         Initally, we want to consider what the core functionality these asynchronous backends need to provide. There are a couple we can immediately consider:
         </p>
-        <ul>
+        <ul class="list-disc list-inside">
             <li>queue accept</li>
             <li>queue recv</li>
             <li>queue send</li>
         </ul>
-        <p>
+        <p class="my-3">
         We must also consider how we interact with all of these queued events:
         </p>
-        <ul>
+        <ul class="list-disc list-inside">
             <li>submit these jobs to be run</li>
             <li>reap the completed jobs to be handled</li>
         </ul>
-        <p>
+        <p class="my-3">
         These functions need to be transparent to the zzz core and they (may) need to each carry their own internal payloads. 
         </p>
-        <pre style="max-width: 80vw;">
+        <pre class="max-w-dvw px-[-2]">
             <code class="language-zig">
                 pub const Completion = struct {
                     context: *anyopaque,
@@ -75,30 +80,32 @@
                 };
             </code>
         </pre>
-        <p>
+        <p class="my-3">
         <i>
         Note: There will be an abstracted <code class="language-zig">Socket</code> type that evaluates at compile time to be the socket of the system or an integer if there isn't one.
         </i>
         </p>
-        <p>
+        <p class="my-3">
         The <code class="language-zig">Async</code> struct is what abstracts every backend passed to zzz.
         It contains a field, <code class="language-zig">runner: *anyopaque</code><sup>[4]</sup>, storing a pointer to whatever the internal implementation uses.
         </p>
-        <p>
+        <p class="my-3">
         It also contains a buffer of 256 <code class="language-zig">Completion</code> structs, each storing a result (<code class="language-zig">i32</code>) and a field,
         <code class="language-zig">context: *anyopaque</code>, for internal implementation use.
         </p>
 
-        <small>[4]: <code class="language-zig">*anyopaque</code> is the same as <code class="language-zig">void*</code> <a href="https://zig.guide/working-with-c/c-primitive-types/">in C</a></small>.
+        <p class="text-small">[4]: <code class="language-zig">*anyopaque</code> is the same as <code class="language-zig">void*</code> <a class="hyperlink" href="https://zig.guide/working-with-c/c-primitive-types/">in C</a></p>.
     </section>
 
     <section id="io_uring">
-        <h3>Integrating io_uring</h3>
-        <p>
+        <h3 class="text-2xl my-2 text-center md:text-left">
+            Integrating io_uring <a class="header-anchor" href="/post/modular-async/#io_uring">#</a>
+        </h3>
+        <p class="my-3">
         Now that we have an idea of what we need in our generic <code class="language-zig">Async</code> struct, 
         we can design a backend using my favorite async I/O api, io_uring.
         </p>
-        <pre style="max-width: 80vw;">
+        <pre class="max-w-dvw px-[-2]">
             <code class="language-zig">
                 pub const AsyncIoUring = struct {
                     runner: *anyopaque,
@@ -150,18 +157,17 @@
                 };
             </code>
         </pre>
-        <p>The <code class="language-zig">AsyncIoUring</code> implementation stores an instance of a uring in the <code class="language-zig">runner: *anyopaque</code> field,
-        allowing for all invocations to have access to this uring.
-        This backend can then utilize the functionality provided by the io_uring api to queue network operations.
+        <p class="my-3">
+        The <code class="language-zig">AsyncIoUring</code> implementation stores an instance of a uring in the <code class="language-zig">runner: *anyopaque</code> field, allowing for all invocations to have access to this uring. This backend can then utilize the functionality provided by the io_uring api to queue network operations.
         </p>
-        <p>
+        <p class="my-3">
         These operations also utilize the <code class="language-zig">context: *anyopaque</code> field from the <code class="language-zig">Completion</code>,
         to attach user data (the internal state of this connection<sup>[5]</sup>) to the completion queue entry.
         <code class="language-zig">submit</code> and <code class="language-zig">reap</code> are self-explainatory, submitting completions or reaping and returning processed ones respectively.
         </p>
         <small>[5]: You can see how it is used later in the <a href="#loop">Core Loop</a> section</small>
         <br>
-        <pre style="max-width: 80vw;">
+        <pre class="max-w-dvw px-[-2]">
             <code class="language-zig">
                 pub fn to_async(self: *AsyncIoUring) Async {
                     return Async{
@@ -181,14 +187,16 @@
         </p>
     </section>
 
-    <section id="loop">
-        <h3>The Core Loop</h3>
+    <section id="core-loop">
+        <h3 class="text-2xl my-2 text-center md:text-left">
+            The Core Loop <a class="header-anchor" href="/post/modular-async/#core-loop">#</a>
+        </h3>
         <p>
         There is an initial preamble that is required for creating the first accept and submitting it to the backend.
         The core loop of zzz works by reaping atleast one completion from the backend, iterating through all of the
         reaped completions, and handling each case appropriately (and likely submitting new actions to the backend).
         </p>
-        <pre style="max-width: 80vw">
+        <pre class="max-w-dvw px-[-2]">
             <code class="language-zig"> 
                 const first = ...;
                 _ = try backend.queue_accept(&first, server_socket);
