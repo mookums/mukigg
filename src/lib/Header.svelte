@@ -6,7 +6,7 @@
     <div class="flex flex-col justify-center items-center">
         <div class="flex mb-1">
             <h1 class="text-3xl font-bold">
-                <a href={base}>muki.gg</a>
+                <a href="{base}/">muki.gg</a>
             </h1>
         </div>
         <div class="flex">
