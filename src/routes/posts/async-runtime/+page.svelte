@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from "$app/paths";
     import Header from "$lib/Header.svelte";
     import hljs from "@highlightjs/cdn-assets/highlight.min.js";
     import { onMount } from "svelte";
@@ -20,7 +21,8 @@
             </section>
             <section class="flex flex-col gap-y-4" id="intro">
                 <h3 class="text-2xl">
-                    Introduction <a class="hyper-blue" href="/posts/async-runtime/#intro">#</a>
+                    Introduction <a class="hyper-blue" href="{base}/posts/async-runtime/#intro">#</a
+                    >
                 </h3>
                 <p>
                     While working on zzz, I thought about how I would trigger asynchronous events
@@ -30,10 +32,9 @@
                     our thread while this query resolves.
                 </p>
                 <p>
-                    As I wrote about <a href="/posts/modular-async">earlier</a>, Zig doesn't have
-                    any async primitives in the language. As a result, this style of execution was
-                    not supported by zzz's event loop and requires some higher level management of
-                    execution.
+                    As I wrote about earlier, Zig doesn't have any async primitives in the language.
+                    As a result, this style of execution was not supported by zzz's event loop and
+                    requires some higher level management of execution.
                 </p>
                 <p>
                     A language with <code class="text-pink-500">async/await</code> will
@@ -97,8 +98,9 @@
             </section>
             <section class="flex flex-col gap-y-4" id="async-io">
                 <h3 class="text-2xl">
-                    Asynchronous I/O <a class="hyper-blue" href="/posts/async-runtime/#async-io"
-                        >#</a
+                    Asynchronous I/O <a
+                        class="hyper-blue"
+                        href="{base}/posts/async-runtime/#async-io">#</a
                     >
                 </h3>
                 <p>
@@ -160,8 +162,9 @@
             </section>
             <section class="flex flex-col gap-y-4" id="scheduler">
                 <h3 class="text-2xl">
-                    Adding a Scheduler <a class="hyper-blue" href="/posts/async-runtime/#scheduler"
-                        >#</a
+                    Adding a Scheduler <a
+                        class="hyper-blue"
+                        href="{base}/posts/async-runtime/#scheduler">#</a
                     >
                 </h3>
                 <p>
@@ -227,8 +230,9 @@
             </section>
             <section class="flex flex-col gap-y-4" id="echo-example">
                 <h3 class="text-2xl">
-                    TCP Echo Example <a class="hyper-blue" href="/posts/async-runtime/#echo-example"
-                        >#</a
+                    TCP Echo Example <a
+                        class="hyper-blue"
+                        href="{base}/posts/async-runtime/#echo-example">#</a
                     >
                 </h3>
                 <p>
@@ -404,8 +408,9 @@ pub fn main() !void {
             </section>
             <section class="flex flex-col gap-y-4" id="final-thoughts">
                 <h3 class="text-2xl">
-                    Final Thoughts <a class="hyper-blue" href="/posts/async-runtime/#final-thoughts"
-                        >#</a
+                    Final Thoughts <a
+                        class="hyper-blue"
+                        href="{base}/posts/async-runtime/#final-thoughts">#</a
                     >
                 </h3>
                 <p>

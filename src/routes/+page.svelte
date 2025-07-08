@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from "$app/paths";
     import Header from "$lib/Header.svelte";
 </script>
 
@@ -39,8 +40,9 @@
                 <h2 class="text-2xl my-1 cursor-pointer select-none">posts</h2>
                 <ul class="flex flex-col gap-y-1">
                     <li>
-                        2024-10-24 / <a class="font-bold hyper-blue" href="/posts/async-runtime"
-                            >Writing an Async Runtime</a
+                        2024-10-24 / <a
+                            class="font-bold hyper-blue"
+                            href="{base}/posts/async-runtime">Writing an Async Runtime</a
                         >
                     </li>
                     <!-- <li>
