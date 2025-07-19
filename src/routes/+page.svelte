@@ -40,6 +40,13 @@
                 <h2 class="text-2xl my-1 cursor-pointer select-none">posts</h2>
                 <ul class="flex flex-col gap-y-1">
                     <li>
+                        2025-08-20 / <a
+                            class="font-bold hyper-blue"
+                            href="{base}/posts/sql-static-analysis"
+                            >Statically Analyzing SQL (without a DB)</a
+                        >
+                    </li>
+                    <li>
                         2024-10-24 / <a
                             class="font-bold hyper-blue"
                             href="{base}/posts/async-runtime">Writing an Async Runtime</a
