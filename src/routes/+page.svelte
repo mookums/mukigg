@@ -42,8 +42,8 @@
                     <li>
                         2025-08-20 / <a
                             class="font-bold hyper-blue"
-                            href="{base}/posts/sql-static-analysis"
-                            >Statically Analyzing SQL (without a DB)</a
+                            href="{base}/posts/sql-static-analysis-intro"
+                            >Statically Analyzing SQL: Introduction</a
                         >
                     </li>
                     <li>
@@ -57,6 +57,15 @@
                             >Modular Async Modeling</a
                         >
                     </li> -->
+                </ul>
+            </section>
+            <section id="demos" class="mb-4">
+                <h2 class="text-2xl my-1 cursor-pointer select-none">demos</h2>
+                <ul class="flex flex-col gap-y-1">
+                    <li>
+                        <a class="font-bold" href="{base}/demo/truffle">truffle</a>: a static
+                        analyzer and type checker for SQL
+                    </li>
                 </ul>
             </section>
             <section id="projects" class="mb-4">
