@@ -22,7 +22,7 @@
                     <h2 class="text-2xl mb-1 font-medium">
                         Statically Analyzing SQL: Introduction
                     </h2>
-                    <span>July 18th, 2025</span>
+                    <span>July 23rd, 2025</span>
                 </hgroup>
             </section>
             <p class="text-center">
@@ -90,10 +90,9 @@
                     your data. When you see the query below, what are all of the pieces that are
                     important for us?
                 </p>
-                <span
-                    >IMAGE HERE OF "create table account (id int primary key, name text not null,
-                    status int not null default 1, email text not null, unique(email))"
-                </span>
+                <pre><code
+                        >{`create table account (id int primary key, name text not null, status int not null default 1, email text not null, unique(email))`}</code
+                    ></pre>
                 <p>
                     The first and easiest thing to notice is that the name has a name, "account".
                     This table name serves as an identifier, allowing us to reference this table in

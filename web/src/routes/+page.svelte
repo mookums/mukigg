@@ -44,7 +44,7 @@
                 <h2 class="text-2xl my-1 cursor-pointer select-none">posts</h2>
                 <ul class="flex flex-col gap-y-1">
                     <li>
-                        2025-08-20 / <a
+                        2025-07-23 / <a
                             class="font-bold hyper-blue"
                             href="{base}/posts/sql-static-analysis-intro"
                             >Statically Analyzing SQL: Introduction</a
