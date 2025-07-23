@@ -9,6 +9,10 @@
     });
 </script>
 
+<svelte:head>
+    <title>muki.gg / Statically Analyzing SQL: Introduction</title>
+</svelte:head>
+
 <div>
     <Header />
     <div class="flex flex-col items-center w-full">
@@ -32,7 +36,7 @@
                 <h3 class="text-2xl">
                     Introduction <a
                         class="hyper-blue"
-                        href="{base}/posts/sql-static-analysis/#intro">#</a
+                        href="{base}/posts/sql-static-analysis-intro/#intro">#</a
                     >
                 </h3>
                 <p>
@@ -56,7 +60,7 @@
                 <h3 class="text-2xl">
                     Migrations and State <a
                         class="hyper-blue"
-                        href="{base}/posts/sql-static-analysis/#migrations">#</a
+                        href="{base}/posts/sql-static-analysis-intro/#migrations">#</a
                     >
                 </h3>
                 <p>
@@ -78,7 +82,7 @@
                 <h3 class="text-2xl">
                     Creating Tables <a
                         class="hyper-blue"
-                        href="{base}/posts/sql-static-analysis/#create-table">#</a
+                        href="{base}/posts/sql-static-analysis-intro/#create-table">#</a
                     >
                 </h3>
                 <p>
@@ -160,7 +164,7 @@ pub struct Table {
                 <h3 class="text-2xl">
                     Validation <a
                         class="hyper-blue"
-                        href="{base}/posts/sql-static-analysis/#validation">#</a
+                        href="{base}/posts/sql-static-analysis-intro/#validation">#</a
                     >
                 </h3>
                 <p>
@@ -199,7 +203,7 @@ if !create_table.if_not_exists && self.tables.contains_key(&name) {
                 <h3 class="text-2xl">
                     Creating Columns <a
                         class="hyper-blue"
-                        href="{base}/posts/sql-static-analysis/#create-column">#</a
+                        href="{base}/posts/sql-static-analysis-intro/#create-column">#</a
                     >
                 </h3>
                 <p>

@@ -58,6 +58,7 @@ checksum = "fe4cd85333e22411419a0bcae1297d25e58c9443848b11dc6a86fefe8c78a661"
 dependencies = [
  "equivalent",
  "hashbrown",
+ "serde",
 ]
 
 [[package]]
@@ -218,6 +219,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde-wasm-bindgen"
+version = "0.6.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8302e169f0eddcc139c70f139d19d6467353af16f9fce27e8c30158036a1e16b"
+dependencies = [
+ "js-sys",
+ "serde",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "serde_derive"
 version = "1.0.219"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -269,6 +281,7 @@ checksum = "07c5f081b292a3d19637f0b32a79e28ff14a9fd23ef47bd7fce08ff5de221eca"
 dependencies = [
  "log",
  "recursive",
+ "serde",
 ]
 
 [[package]]
@@ -414,7 +427,7 @@ dependencies = [
 [[package]]
 name = "truffle-sim"
 version = "0.1.0"
-source = "git+https://github.com/mookums/truffle.git#a64e3e8eebc85a633c190ab85ac0a9936309abe6"
+source = "git+https://github.com/mookums/truffle.git#d99a935e2d70a52aa8ca3e74682546cdc5cb2c9a"
 dependencies = [
  "indexmap",
  "itertools",
@@ -432,6 +445,7 @@ dependencies = [
 name = "truffle-wasm"
 version = "0.1.0"
 dependencies = [
+ "serde-wasm-bindgen",
  "truffle-sim",
  "wasm-bindgen",
 ]

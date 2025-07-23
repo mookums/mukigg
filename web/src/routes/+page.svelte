@@ -3,6 +3,10 @@
     import Header from "$lib/Header.svelte";
 </script>
 
+<svelte:head>
+    <title>muki.gg</title>
+</svelte:head>
+
 <div>
     <Header />
     <main class="flex flex-col items-center">
@@ -64,7 +68,7 @@
                 <ul class="flex flex-col gap-y-1">
                     <li>
                         <a class="font-bold" href="{base}/demo/truffle">truffle</a>: a static
-                        analyzer and type checker for SQL
+                        analyzer and type checker for SQL.
                     </li>
                 </ul>
             </section>

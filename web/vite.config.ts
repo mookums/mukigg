@@ -1,8 +1,14 @@
 import tailwindcss from "@tailwindcss/vite";
 import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vite";
-import wasmPack from "vite-plugin-wasm-pack";
+import wasm from "vite-plugin-wasm";
+import topLevelAwait from "vite-plugin-top-level-await";
 
 export default defineConfig({
-    plugins: [wasmPack("../truffle-wasm"), tailwindcss(), sveltekit()],
+    plugins: [tailwindcss(), sveltekit(), wasm(), topLevelAwait()],
+    server: {
+        fs: {
+            allow: ["../truffle-wasm/pkg"],
+        },
+    },
 });

@@ -9,6 +9,10 @@
     });
 </script>
 
+<svelte:head>
+    <title>muki.gg / Writing an Async Runtime</title>
+</svelte:head>
+
 <div>
     <Header />
     <div class="flex flex-col items-center w-full">
