@@ -1,0 +1,21 @@
+{
+    "$schema": "https://turborepo.com/schema.json",
+    "envMode": "loose",
+    "tasks": {
+        "@mukigg/web#build": {
+            "inputs": ["src/**/*.{ts,svelte}", "static/**", "*.{ts,js,json}", "package.json"],
+            "outputs": ["build/**"],
+            "cache": true
+        },
+        "@mukigg/web#dev": {
+            "dependsOn": ["@mukigg/truffle-wasm#build"],
+            "persistent": true,
+            "cache": false
+        },
+        "@mukigg/truffle-wasm#build": {
+            "inputs": ["src/**/*.rs", "Cargo.toml"],
+            "outputs": ["pkg/**"],
+            "cache": true
+        }
+    }
+}

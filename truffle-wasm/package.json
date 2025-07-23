@@ -1,0 +1,10 @@
+{
+    "name": "@mukigg/truffle-wasm",
+    "description": "",
+    "version": "0.0.0",
+    "author": "Muki",
+    "private": true,
+    "scripts": {
+        "build": "wasm-pack build --target web"
+    }
+}
