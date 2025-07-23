@@ -15,12 +15,12 @@ jobs:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Build with nix flake environment
-        run: nix develop --command pnpm run @mukigg/web#build
+        run: nix develop --command turbo run @mukigg/web#build
 
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'build/'
+          path: 'web/build/'
   
   deploy:
     needs: build
