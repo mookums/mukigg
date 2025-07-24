@@ -14,16 +14,18 @@ jobs:
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Cache Nix store
-        uses: actions/cache@v4
+      - name: Restore and save Nix store
+        uses: nix-community/cache-nix-action@v6
         with:
-          path: |
-            /nix/store
-            ~/.cache/nix
-          key: nix-${{ runner.os }}-${{ hashFiles('flake.lock') }}
-          restore-keys: |
-            nix-${{ runner.os }}-
-      
+          primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix', '**/flake.lock') }}
+          restore-prefixes-first-match: nix-${{ runner.os }}-
+          gc-max-store-size-linux: 2G
+          purge: true
+          purge-prefixes: nix-${{ runner.os }}-
+          purge-created: 604800 # 7 days
+          purge-last-accessed: 86400 # 24 hours
+          purge-primary-key: never
+     
       - name: Build with nix flake environment
         run: nix develop --command bash -c 'pnpm install && turbo run @mukigg/web#build'
 
