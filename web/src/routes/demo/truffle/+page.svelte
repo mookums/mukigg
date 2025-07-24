@@ -202,23 +202,26 @@
     <Header />
     <main class="flex flex-col flex-grow justify-center items-center mb-8">
         <div class="flex flex-col justify-center items-center w-screen gap-y-8 relative">
-            <section class="flex flex-col text-center w-[70%] m-4 gap-y-2" id="title">
-                <hgroup class="flex flex-col justify-center items-center gap-y-2">
-                    <h2 class="text-2xl mb-1 font-medium">Truffle Demo</h2>
-                    <p>
-                        Truffle is an SQL static analyzer. It maintains a stateful schema from
-                        previously run SQL queries and is able to verify various constraints,
-                        including type-checking expressions and verifying foreign keys.
-                    </p>
-                    <p>
-                        You can start reading about it <a
-                            class="hyper-blue"
-                            href="{base}/posts/sql-static-analysis-intro">here</a
-                        >. You can view the source code
-                        <a class="hyper-blue" href="https://github.com/mookums/truffle">here</a>.
-                    </p>
-                </hgroup>
-            </section>
+            {#if !isFullscreen}
+                <section class="flex flex-col text-center w-[70%] m-4 gap-y-2" id="title">
+                    <hgroup class="flex flex-col justify-center items-center gap-y-2">
+                        <h2 class="text-2xl mb-1 font-medium">Truffle Demo</h2>
+                        <p>
+                            Truffle is an SQL static analyzer. It maintains a stateful schema from
+                            previously run SQL queries and is able to verify various constraints,
+                            including type-checking expressions and verifying foreign keys.
+                        </p>
+                        <p>
+                            You can start reading about it <a
+                                class="hyper-blue"
+                                href="{base}/posts/sql-static-analysis-intro">here</a
+                            >. You can view the source code
+                            <a class="hyper-blue" href="https://github.com/mookums/truffle">here</a
+                            >.
+                        </p>
+                    </hgroup>
+                </section>
+            {/if}
 
             <div
                 class="{isFullscreen
