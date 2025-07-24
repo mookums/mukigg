@@ -19,7 +19,7 @@
         <div class="flex flex-col w-full max-w-3xl gap-y-2 px-4">
             <section class="m-4" id="title">
                 <hgroup class="flex flex-col justify-center items-center">
-                    <h2 class="text-2xl mb-1 font-medium">Writing an Async Runtime</h2>
+                    <h2 class="text-center text-2xl mb-1 font-medium">Writing an Async Runtime</h2>
                     <span>Oct. 24th, 2024</span>
                 </hgroup>
             </section>

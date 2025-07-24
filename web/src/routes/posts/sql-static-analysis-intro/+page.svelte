@@ -19,7 +19,7 @@
         <div class="flex flex-col w-full max-w-3xl gap-y-4 px-4">
             <section class="m-4" id="title">
                 <hgroup class="flex flex-col justify-center items-center">
-                    <h2 class="text-2xl mb-1 font-medium">
+                    <h2 class="text-center text-2xl mb-1 font-medium">
                         Statically Analyzing SQL: Introduction
                     </h2>
                     <span>July 23rd, 2025</span>
