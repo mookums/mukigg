@@ -199,7 +199,9 @@
 </svelte:head>
 
 <div>
-    <Header />
+    {#if !isFullscreen}
+        <Header />
+    {/if}
     <main class="flex flex-col flex-grow justify-center items-center mb-8">
         <div class="flex flex-col justify-center items-center w-screen gap-y-8 relative">
             {#if !isFullscreen}
