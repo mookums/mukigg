@@ -222,7 +222,7 @@
 
             <div
                 class="{isFullscreen
-                    ? 'fixed top-0 left-0 right-0 h-[90vh] my-8 z-50'
+                    ? 'fixed top-0 left-0 right-0 h-[75vh] my-8 z-50'
                     : 'h-[50vh] relative max-w-4xl'} flex flex-col p-4 whitespace-pre-wrap border-2 border-neutral-400 rounded-lg bg-white items-center w-[90%] mx-auto"
             >
                 <button
