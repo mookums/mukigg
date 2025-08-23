@@ -1,6 +1,6 @@
 [package]
 name = "truffle-wasm"
-version = "0.1.0"
+version = "0.0.0"
 edition = "2024"
 
 [lib]
@@ -8,6 +8,6 @@ crate-type = [ "cdylib" ]
 
 [dependencies]
 serde-wasm-bindgen = "0.6.5"
-truffle-sim = { git = "https://github.com/mookums/truffle.git", features = [ "serde" ] }
+truffle = { git = "https://github.com/mookums/truffle.git", features = [ "serde" ] }
 wasm-bindgen = "0.2.100"
 

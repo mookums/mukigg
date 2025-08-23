@@ -102,6 +102,35 @@
             return `⤷ Columns:\n${formattedColumns}\n⤷ Constraints:\n${formattedConstraints}`;
         };
 
+        const formatResolved = (resolved: any) => {
+            const formattedInputs =
+                resolved.inputs.length > 0
+                    ? [...resolved.inputs]
+                          .map((col, i) => {
+                              const parts = [`Type: ${col.ty}`];
+                              if (col.unique) parts.push("Unique");
+                              if (col.default) parts.push("Default");
+                              return `    ⤷ $${i + 1}: ${parts.join(", ")}`;
+                          })
+                          .join("\n")
+                    : "    (none)";
+
+            const formattedOutputs =
+                resolved.outputs.size > 0
+                    ? [...resolved.outputs.entries()]
+                          .map(([key, col]) => {
+                              const formattedRef = `${key.qualifier ? key.qualifier + "." : ""}${key.name}`;
+                              const parts = [`Type: ${col.ty}`];
+                              if (col.unique) parts.push("Unique");
+                              if (col.default) parts.push("Default");
+                              return `    ⤷ ${formattedRef}: ${parts.join(", ")}`;
+                          })
+                          .join("\n")
+                    : "    (none)";
+
+            return `⤷ Inputs:\n${formattedInputs}\n⤷ Outputs:\n${formattedOutputs}`;
+        };
+
         if (!currentInput.trim()) return;
 
         const totalInput = currentInput.trim().toLowerCase();
@@ -172,7 +201,7 @@
                     try: () => execute_sql(simulator!, totalInput),
                     catch: (e) => e as string,
                 }),
-                Effect.map(() => "⤷ ✓"),
+                Effect.map((resolved) => formatResolved(resolved)),
                 executeWithLogging,
             );
         }
@@ -221,6 +250,7 @@
                             <a class="hyper-blue" href="https://github.com/mookums/truffle">here</a
                             >.
                         </p>
+                        <span class="text-sm">Version 0.2.0</span>
                     </hgroup>
                 </section>
             {/if}

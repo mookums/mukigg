@@ -1,4 +1,4 @@
-use truffle_sim::{GenericDialect, Simulator};
+use truffle::Simulator;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -6,16 +6,17 @@ extern "C" {}
 
 #[wasm_bindgen]
 pub fn create_simulator() -> *mut Simulator {
-    let simulator = Simulator::new(Box::new(GenericDialect {}));
+    let simulator = Simulator::default();
     Box::into_raw(Box::new(simulator))
 }
 
 #[wasm_bindgen]
 /// # Safety
 /// You know how WASM is.
-pub unsafe fn execute_sql(sim: *mut Simulator, data: &str) -> Result<(), JsValue> {
+pub unsafe fn execute_sql(sim: *mut Simulator, data: &str) -> Result<JsValue, JsValue> {
     let sim = unsafe { &mut *sim };
     sim.execute(data)
+        .map(|r| serde_wasm_bindgen::to_value(&r).unwrap())
         .map_err(|e| JsValue::from_str(&e.to_string()))
 }
 
