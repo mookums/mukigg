@@ -1,7 +1,6 @@
 @import 'tailwindcss';
 @import '@fontsource/open-sans';
 @import '@fontsource/jetbrains-mono';
-@import "@highlightjs/cdn-assets/styles/base16/edge-light.min.css";
 
 @theme {
     --font-opensans: "Open Sans", "sans-serif";

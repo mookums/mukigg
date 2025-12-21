@@ -10,7 +10,6 @@
     };
 
     crane.url = "github:ipetkov/crane";
-
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -46,7 +45,6 @@
             pnpm
             typescript
             typescript-language-server
-            svelte-language-server
             turbo
           ];
         };

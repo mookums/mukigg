@@ -24,3 +24,5 @@ vite.config.ts.timestamp-*
 
 target
 .turbo
+
+web/_site
