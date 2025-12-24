@@ -15,14 +15,6 @@ title: Slab Allocating in a Web Browser
   </p>
 {% endsection %}
 
-{% section "dom", "What is the DOM?" %}
-  <p>
-    The DOM (Document Object Model) is an interface that represents a webpage as a tree. This tree can be manipulated and
-    accessed by Javascript, allowing for dynamic and interactive behaviors.
-  </p>
-  <img class="w-full" src="https://placehold.co/800x200" />
-{% endsection %}
-
 {% section "too-many-allocations", "Too Many Allocations" %}
   <p>
   One of the new additions with this branch was the Factory,
@@ -75,7 +67,7 @@ pub fn htmlElement(self: *Factory, child: anytype) !*@TypeOf(child) {
 {% endhighlight %}
   <img class="w-full" src="/assets/img/html_div_element_chain.svg" />
   <p>
-    Imagine we are creating an <a class="hyper-blue" href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLDivElement">HTMLDivElement</a>.
+    Imagine there is a <a class="hyper-blue" href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLDivElement">HTMLDivElement</a> being created.
     The Factory will call into the methods above where each one will allocate one of the structures required in the prototype chain,
     resulting in a total of 5 allocations.
   </p>
@@ -122,10 +114,128 @@ _size_648_8: MemoryPoolAligned([648]u8, .@"8"),
 
 {% section "slab-allocator", "The Slab Allocator" %}
   <p>
-    The new solution for the allocations that need to take place inside of the Factory was the SlabAllocator.
-    There were a list of improvements that were essential for this to be a successful replacement of the MemoryPool approach.
+    With the problems of the initial implementation highlighted, the solution exists in the form of a Slab Allocator.
+    This allocator internally manages a list of Slabs, where each Slab represents a unique size and alignment pair.
+    This echoes the strategy used previously by the MemoryPools but eliminates the need to have a manually managed list of Pools.
   </p>
+  <img class="w-full" src="/assets/img/html_div_element_slab.svg" />
+  <span class="text-xs">The object and all of its prototypes are allocated together with good locality.</span>
+  <p>
+    The Slab Allocator also came with a variety of changes to the Factory itself, mostly in the form of amoritized allocations for objects.
+    We can now allocate one contiguous slice of memory instead of N slices in different Pools, reducing the number of allocations required compared to
+    the previous Pool approach.
+  </p>
+  <img class="w-full" src="https://placehold.co/800x200" />
+  <p>
+    The Slab Allocator also amoritizes allocations for Slabs that are considered hot, using an exponentially growing chunk count (with a limit at 128 slots).
+    This allows us to balance fragmentation and the minimization of allocations, ensuring that hot slabs allocate less often and cold slabs use less memory.
+  </p>
+  <p>
+    Below are two benchmarks of Factory memory usage, one with the old Pools and one with the new Slab Allocator.
+  </p>
+  <div class="grid grid-cols-2 gap-x-4">
+    {% highlight "bash" %}
+  === Factory Memory Statistics ===
+Total Allocations: 13527
+Total Allocated: 576306 bytes (0.55 MB)
+
+Per-Pool Breakdown:
+              Name |        Bytes |  % Total
+  -----------------+--------------+---------
+         _size_8_8 |          196 |     0.0%
+        _size_16_8 |        77165 |    13.4%
+        _size_24_8 |          280 |     0.0%
+        _size_32_8 |        68786 |    11.9%
+       _size_32_16 |         8578 |     1.5%
+        _size_40_8 |       118052 |    20.5%
+       _size_48_16 |       145357 |    25.2%
+        _size_56_8 |       145357 |    25.2%
+       _size_64_16 |         1272 |     0.2%
+       _size_80_16 |          176 |     0.0%
+        _size_88_8 |            0 |     0.0%
+       _size_96_16 |         3275 |     0.6%
+       _size_128_8 |         3864 |     0.7%
+       _size_144_8 |            0 |     0.0%
+       _size_152_8 |            0 |     0.0%
+       _size_160_8 |            0 |     0.0%
+       _size_184_8 |            0 |     0.0%
+       _size_232_8 |          392 |     0.1%
+       _size_648_8 |         3556 |     0.6%
+    
+    {% endhighlight %}
+
+    {% highlight "bash" %}
+=== Slab Allocator Statistics ===
+Overall Memory:
+  Total allocated: 587784 bytes (0.56 MB)
+  In use:          549656 bytes (0.52 MB)
+  Free:            38128 bytes (0.04 MB)
+
+Overall Structure:
+  Slab Count:    27
+  Total chunks:    153
+  Total slots:     7997
+  Slots in use:    7691
+  Slots free:      306
+
+Overall Efficiency:
+  Utilization:     93.5%
+  Fragmentation:   6.5%
+
+Per-Slab Breakdown:
+   Size | Algn | Chunks |  Slots |  InUse |      Bytes |  Util%
+  ------+------+--------+--------+--------+------------+-------
+    272 |    3 |      1 |      1 |      1 |        272 | 100.0%
+     48 |    3 |      2 |      3 |      3 |        144 | 100.0%
+     32 |    3 |      1 |      1 |      1 |         32 | 100.0%
+    408 |    3 |      1 |      1 |      1 |        408 | 100.0%
+     72 |    3 |      1 |      1 |      1 |         72 | 100.0%
+      8 |    3 |      4 |     15 |     10 |        120 |  66.7%
+    128 |    3 |      1 |      1 |      1 |        128 | 100.0%
+     16 |    3 |     20 |   1791 |   1780 |      28656 |  99.4%
+    144 |    3 |     17 |   1407 |   1300 |     202608 |  92.4%
+     48 |    4 |     31 |   3199 |   3145 |     153552 |  98.3%
+    112 |    3 |     13 |    895 |    887 |     100240 |  99.1%
+    264 |    3 |      4 |     15 |     14 |       3960 |  93.3%
+     40 |    3 |      6 |     63 |     57 |       2520 |  90.5%
+     80 |    4 |      6 |     63 |     52 |       5040 |  82.5%
+    152 |    3 |      2 |      3 |      3 |        456 | 100.0%
+    168 |    3 |      2 |      3 |      2 |        504 |  66.7%
+    184 |    3 |      6 |     63 |     51 |      11592 |  81.0%
+     96 |    3 |      4 |     15 |      8 |       1440 |  53.3%
+    176 |    3 |      2 |      3 |      3 |        528 | 100.0%
+     24 |    3 |      4 |     15 |     14 |        360 |  93.3%
+     64 |    4 |      4 |     15 |     13 |        960 |  86.7%
+    784 |    3 |      2 |      3 |      2 |       2352 |  66.7%
+    176 |    4 |      9 |    383 |    308 |      67408 |  80.4%
+    160 |    4 |      1 |      1 |      1 |        160 | 100.0%
+    {% endhighlight %}
+  </div>
+  <p>
+    These were both run on a Reddit page we use for end to end testing and clearly highlights the difference between the two implementations.
+  </p>
+  <p>
+    The old Pool Factory (left) makes a total of 13527 allocations with a total allocated size of 0.55 MB. There are pools that are hot
+    and cold, where the (size 48, alignment 16) and (size 56, alignment 8) make up 50% of the total allocations while others like (size 144, alignment 8) make up 0%.
+    Allocating for each item has an advantage however, it ends up using less memory overall because there is never unused space as N is always divisible by 1.
+  </p>
+  <p>
+    The new Slab Factory (right) makes a total of 153 allocations<sup>[1]</sup> with a total allocated size of 0.56 MB.
+    This Factory also has hot and cold slabs but they retain a high utilization due to the capped exponential growth of the chunk sizes. 
+    The Slab Factory will always have some form of fragmentation because N is not always divisible by the current chunk size.
+  </p>
+  <p>
+    This shows a 98.86% decrease in total memory allocations while paying only paying a cost of ~2% increased memory usage.
+    There are additional benefits such as improved memory locality due to all of an objects prototypes being colocated, freeing entire object slots at once,
+    and better observability as to how our Factory is behaving with different web pages.
+  </p>
+  <span class="text-xs">[1]: The Slab Factory allocates in chunks instead of individual items so total chunks == total allocations.</span>
 {% endsection %}
 
 {% section "post-mortem", "Post Mortem" %}
+<p>
+  The PRs (<a class="hyper-blue" href="https://github.com/lightpanda-io/browser/pull/1233">1</a>, <a class="hyper-blue" href="https://github.com/lightpanda-io/browser/pull/1238">2</a>)
+  have been merged into development branch for a couple of weeks now with no real issues.
+  I've personally added additional types to the Factory recently when working with various Events and their prototypes and felt generally positive.
+</p>
 {% endsection %}
