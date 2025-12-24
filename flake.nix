@@ -2,7 +2,7 @@
   description = "the muki.gg website";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/25.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
 
     fenix = {
       url = "github:nix-community/fenix";
@@ -41,7 +41,7 @@
             wasm-pack
 
             # Javascript
-            nodejs_22
+            nodejs_24
             pnpm
             typescript
             typescript-language-server
