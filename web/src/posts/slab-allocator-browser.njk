@@ -1,0 +1,131 @@
+---
+layout: post.njk
+tags: post
+date: 2025-12-24
+title: Slab Allocating in a Web Browser
+---
+
+{% section "intro", "Introduction" %}
+  <p>
+    If you didn't know from the index page, I spend my days working as an engineer
+    on <a class="hyper-blue" href="https://lightpanda.io">Lightpanda</a>, a headless web browser that is written in Zig.
+    We've recently been working on a rework of our DOM layer on a branch aptly
+    named <a class="hyper-blue" href="https://github.com/lightpanda-io/browser/pull/1181">zigdom</a>.
+    This will be about a recent optimization that took place on the zigdom branch, focused on improvements of allocator behavior.
+  </p>
+{% endsection %}
+
+{% section "dom", "What is the DOM?" %}
+  <p>
+    The DOM (Document Object Model) is an interface that represents a webpage as a tree. This tree can be manipulated and
+    accessed by Javascript, allowing for dynamic and interactive behaviors.
+  </p>
+  <img class="w-full" src="https://placehold.co/800x200" />
+{% endsection %}
+
+{% section "too-many-allocations", "Too Many Allocations" %}
+  <p>
+  One of the new additions with this branch was the Factory,
+  which handles the creation of objects shared between Zig and the Javascript running from the web page.
+  This Factory creates objects and their prototypes and wires them up together correctly, allowing for the object oriented nature
+  of Javascript to correctly function.
+  </p>
+{% highlight "zig" %}
+pub fn createT(self: *Factory, comptime T: type) !*T {
+  // Chooses a pool based on size and alignment of T.
+  // Allocates in that pool and returns a ptr to T.
+}
+
+pub fn eventTarget(self: *Factory, child: anytype) !*@TypeOf(child) {
+    const child_ptr = try self.createT(@TypeOf(child));
+    child_ptr.* = child;
+
+    const et = try self.createT(EventTarget);
+    child_ptr._proto = et;
+    et.* = .{ ._type = unionInit(EventTarget.Type, child_ptr) };
+    return child_ptr;
+}
+
+pub fn node(self: *Factory, child: anytype) !*@TypeOf(child) {
+    // ...
+    child_ptr._proto = try self.eventTarget(Node{
+        ._proto = undefined,
+        ._type = unionInit(Node.Type, child_ptr),
+    });
+    // ...
+}
+
+pub fn element(self: *Factory, child: anytype) !*@TypeOf(child) {
+    // ...
+    child_ptr._proto = try self.node(Element{
+        ._proto = undefined,
+        ._type = unionInit(Element.Type, child_ptr),
+    });
+    // ...
+}
+
+pub fn htmlElement(self: *Factory, child: anytype) !*@TypeOf(child) {
+    // ...
+    const html = try self.element(Element.Html{
+        ._proto = undefined,
+        ._type = unionInit(Element.Html.Type, child),
+    });
+    // ...
+}
+{% endhighlight %}
+  <img class="w-full" src="/assets/img/html_div_element_chain.svg" />
+  <p>
+    Imagine we are creating an <a class="hyper-blue" href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLDivElement">HTMLDivElement</a>.
+    The Factory will call into the methods above where each one will allocate one of the structures required in the prototype chain,
+    resulting in a total of 5 allocations.
+  </p>
+  <p>
+    The initial approach used a list of MemoryPools, each one corresponding to a unique size and alignment pair.
+    This minimized the impact of internal memory fragmentation as each item takes up only the space it needs
+    (along with the padding required for alignment). This method however comes with a few tradeoffs.
+  </p>
+  <img class="w-full" src="/assets/img/html_div_element_pool.svg" />
+  <span class="text-xs">Each object in the prototype chain is allocated in a different memory pool.</span>
+  <p>
+    The result of each of these allocations residing in a seperate pool is significantly worse memory locality.
+    Additionally, whenever we end up wanting to free one of these, we must iterate through all of the prototypes,
+    marking each of those slots as free in whatever pool it belongs to.
+    When creating and working with tens of thousands of objects created through the Factory, memory locality tends
+    to become more important.
+  </p>
+{% highlight "zig" %}
+_size_8_8: MemoryPoolAligned([8]u8, .@"8"),
+_size_16_8: MemoryPoolAligned([16]u8, .@"8"),
+_size_24_8: MemoryPoolAligned([24]u8, .@"8"),
+_size_32_8: MemoryPoolAligned([32]u8, .@"8"),
+_size_32_16: MemoryPoolAligned([32]u8, .@"16"),
+_size_40_8: MemoryPoolAligned([40]u8, .@"8"),
+_size_48_16: MemoryPoolAligned([48]u8, .@"16"),
+_size_56_8: MemoryPoolAligned([56]u8, .@"8"),
+_size_64_16: MemoryPoolAligned([64]u8, .@"16"),
+_size_80_16: MemoryPoolAligned([80]u8, .@"16"),
+_size_88_8: MemoryPoolAligned([88]u8, .@"8"),
+_size_96_16: MemoryPoolAligned([96]u8, .@"16"),
+_size_128_8: MemoryPoolAligned([128]u8, .@"8"),
+_size_144_8: MemoryPoolAligned([144]u8, .@"8"),
+_size_152_8: MemoryPoolAligned([152]u8, .@"8"),
+_size_160_8: MemoryPoolAligned([160]u8, .@"8"),
+_size_184_8: MemoryPoolAligned([184]u8, .@"8"),
+_size_232_8: MemoryPoolAligned([232]u8, .@"8"),
+_size_648_8: MemoryPoolAligned([648]u8, .@"8"),
+{% endhighlight %}
+  <p>
+    Another issue with the initial Factory approach was the manual management of the Pools, where one must create a new MemoryPool
+    and update some of these core Factory methods whenever an object of unique size and alignment was implemented.
+  </p>
+{% endsection %}
+
+{% section "slab-allocator", "The Slab Allocator" %}
+  <p>
+    The new solution for the allocations that need to take place inside of the Factory was the SlabAllocator.
+    There were a list of improvements that were essential for this to be a successful replacement of the MemoryPool approach.
+  </p>
+{% endsection %}
+
+{% section "post-mortem", "Post Mortem" %}
+{% endsection %}

@@ -33,6 +33,13 @@ export default async function(eleventyConfig) {
   });
 
   eleventyConfig.addFilter("date", (dateObj, format) => {
-    return DateTime.fromJSDate(dateObj).toFormat(format);
+    return DateTime.fromJSDate(dateObj, { zone: 'utc' }).toFormat(format);
   })
+
+  eleventyConfig.addPairedShortcode("section", function(content, id, title) {
+    return `<section class="flex flex-col gap-y-4" id="${id}">
+        <h3 class="text-2xl">${title} <a class="hyper-blue" href="#${id}">#</a></h3>
+        ${content}
+      </section>`;
+  });
 }
