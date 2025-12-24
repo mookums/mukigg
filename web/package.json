@@ -5,6 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "eleventy --serve",
+		"build": "eleventy",
 		"format": "prettier --write .",
 		"lint": "prettier --check ."
 	},

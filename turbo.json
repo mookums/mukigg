@@ -7,6 +7,12 @@
             "persistent": true,
             "cache": false
         },
+        "@mukigg/web#build": {
+            "dependsOn": ["@mukigg/truffle-wasm#build"],
+            "inputs": ["src/_site/**/*"],
+            "persistent": true,
+            "cache": true
+        },
         "@mukigg/truffle-wasm#build": {
             "inputs": ["src/**/*.rs", "Cargo.toml"],
             "outputs": ["pkg/**"],
