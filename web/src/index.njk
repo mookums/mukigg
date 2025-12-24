@@ -5,8 +5,7 @@ title: muki.gg
 
 <section class="flex flex-col gap-y-4" id="about">
   <p>
-      hello! i'm muki and i'm a computer engineer from seattle. this website is mostly
-      just a personal library where i just put things i find interesting.
+      hello! i'm muki and i'm a computer engineer from seattle. this website is just a personal library.
   </p>
   <p>
       i'm currently working as a software engineer at <a
@@ -35,7 +34,7 @@ title: muki.gg
 <section id="posts" class="my-4">
   <h2 class="text-2xl my-1 cursor-pointer select-none">posts</h2>
   <ul class="flex flex-col gap-y-1">
-    {%- for post in collections.post -%}
+    {%- for post in collections.post | reverse -%}
       <li>
           {{ post.date | date("yyyy-MM-dd") }} / <a
               class="font-bold hyper-blue"

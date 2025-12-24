@@ -2,12 +2,6 @@
     "$schema": "https://turborepo.com/schema.json",
     "envMode": "loose",
     "tasks": {
-        "@mukigg/web#build": {
-            "dependsOn": ["@mukigg/truffle-wasm#build"],
-            "inputs": ["src/**/*.{ts,svelte}", "static/**", "*.{ts,js,json}", "package.json"],
-            "outputs": ["build/**"],
-            "cache": true
-        },
         "@mukigg/web#dev": {
             "dependsOn": ["@mukigg/truffle-wasm#build"],
             "persistent": true,

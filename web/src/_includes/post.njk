@@ -1,0 +1,16 @@
+---
+layout: page.njk
+---
+
+<div class="flex flex-col items-center w-full">
+  <div class="flex flex-col w-full max-w-3xl gap-y-2 px-4 m-4">
+    <section id="title">
+      <hgroup class="flex flex-col justify-center items-center">
+        <h2 class="text-center text-2xl mb-1 font-medium"> {{ title }}</h2>
+        <span> {{ date |  date("LLL. dd, yyyy") }}</span>
+      </hgroup>
+    </section>
+
+    {{ content | safe }}
+  </div>
+</div>
