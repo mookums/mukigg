@@ -1,7 +1,7 @@
 ---
 layout: post.njk
 tags: post
-date: 2025-12-24
+date: 2025-12-25
 title: Slab Allocating in a Web Browser
 ---
 
@@ -125,13 +125,12 @@ _size_648_8: MemoryPoolAligned([648]u8, .@"8"),
     We can now allocate one contiguous slice of memory instead of N slices in different Pools, reducing the number of allocations required compared to
     the previous Pool approach.
   </p>
-  <img class="w-full" src="https://placehold.co/800x200" />
   <p>
     The Slab Allocator also amoritizes allocations for Slabs that are considered hot, using an exponentially growing chunk count (with a limit at 128 slots).
     This allows us to balance fragmentation and the minimization of allocations, ensuring that hot slabs allocate less often and cold slabs use less memory.
   </p>
   <p>
-    Below are two benchmarks of Factory memory usage, one with the old Pools and one with the new Slab Allocator.
+    Below are two benchmarks of Factory memory usage, one with the old Pool Factory and one with the new Slab Factory.
   </p>
   <div class="grid grid-cols-2 gap-x-4">
     {% highlight "bash" %}
@@ -235,7 +234,7 @@ Per-Slab Breakdown:
 {% section "post-mortem", "Post Mortem" %}
 <p>
   The PRs (<a class="hyper-blue" href="https://github.com/lightpanda-io/browser/pull/1233">1</a>, <a class="hyper-blue" href="https://github.com/lightpanda-io/browser/pull/1238">2</a>)
-  have been merged into development branch for a couple of weeks now with no real issues.
+  have been merged into the zigdom branch for a couple of weeks now with no real issues.
   I've personally added additional types to the Factory recently when working with various Events and their prototypes and felt generally positive.
 </p>
 {% endsection %}
