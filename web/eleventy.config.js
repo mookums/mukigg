@@ -8,6 +8,8 @@ import syntaxHighlight from "@11ty/eleventy-plugin-syntaxhighlight";
 import { feedPlugin } from "@11ty/eleventy-plugin-rss";
 import { DateTime } from "luxon";
 
+import externalPosts from "./_data/externalPosts.js";
+
 export default async function(eleventyConfig) {
   eleventyConfig.setInputDirectory("src");
   eleventyConfig.addPassthroughCopy("src/assets");
@@ -42,4 +44,15 @@ export default async function(eleventyConfig) {
         ${content}
       </section>`;
   });
+
+  eleventyConfig.addCollection("post", function(collectionApi) {
+    const localPosts = collectionApi.getFilteredByTag("post");
+    const taggedExternalPosts = externalPosts.map(ep => ({
+      ...ep,
+      data: { ...ep.data, external: true },
+    }));
+
+    return [...localPosts, ...taggedExternalPosts].sort((a, b) => b.date - a.date);
+  });
+
 }
