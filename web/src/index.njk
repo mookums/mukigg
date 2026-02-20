@@ -2,78 +2,79 @@
 layout: page.njk
 title: muki.gg
 ---
-
 <section class="flex flex-col gap-y-4" id="about">
-  <p>
+   <p>
       hello! i'm muki and i'm a computer engineer from seattle. this website is just a personal library.
-  </p>
-  <p>
-      i'm currently working as a software engineer at <a
-          class="hyper-blue"
-          href="https://lightpanda.io">lightpanda</a
-      > where i work on a headless browser for ai and automation workflows. my day to day
-      is in zig with some c++ when interfacing with v8.
-  </p>
-  <p>you can contact me at muki@[this_domain].</p>
-  <div>
+   </p>
+   <p>
+      i'm currently working as a software engineer at
+      <a
+         class="hyper-blue"
+         href="https://lightpanda.io">lightpanda</a>
+      where i work on a headless browser for ai and automation workflows.
+      my day to day is mostly in zig with tiny bits of c++ and rust.
+   </p>
+   <p>you can contact me at muki@[this_domain].</p>
+   <div>
       <p>historically,</p>
       <ul class="list-disc list-inside">
-          <li>
-              i worked at <a class="hyper-blue" href="https://pyro.host">pyro</a> where
-              i was a systems software engineer writing rust, zig and nix on a daily basis.
-          </li>
-          <li>
-              i led the flight computer team at huskysat, the university of washington
-              cubesat team.
-          </li>
-          <li>i built and sold a motorsports race management product.</li>
-          <li>i interned at amazon twice working on the amazon approvals team.</li>
+         <li>
+            i worked at <a class="hyper-blue" href="https://pyro.host">pyro</a> where
+            i worked on systems, writing rust, zig and nix on a daily basis.
+         </li>
+         <li>
+            i led the flight computer team at huskysat, the university of washington
+            cubesat team.
+         </li>
+         <li>
+            i built and sold a motorsports race management product.
+         </li>
+         <li>
+            i interned at amazon twice working on the amazon approvals team.
+         </li>
       </ul>
-  </div>
+   </div>
 </section>
 <section id="posts" class="my-4">
-  <h2 class="text-2xl my-1 cursor-pointer select-none">posts</h2>
-  <ul class="flex flex-col gap-y-1">
-    {%- for post in collections.post -%}
-        <li>
-            {{ post.date | date("yyyy-MM-dd") }} /
-            <a
-                class="inline-flex items-center gap-x-2 font-bold hyper-blue"
-                href="{{ post.url }}"
-                >
-                {{ post.data.title }}
-                {% if post.data.external %} <i class="h-4 w-4" data-lucide="external-link"></i>{% endif %}
-            </a>
+   <h2 class="text-2xl my-1 cursor-pointer select-none">posts</h2>
+   <ul class="flex flex-col gap-y-1">
+      {%- for post in collections.post -%}
+      <li>
+         {{ post.date | date("yyyy-MM-dd") }} /
+         <a
+            class="inline-flex items-center gap-x-2 font-bold hyper-blue"
+            href="{{ post.url }}"
+            >
+         {{ post.data.title }}
+         {% if post.data.external %} <i class="h-4 w-4" data-lucide="external-link"></i>{% endif %}
+         </a>
       </li>
-    {%- endfor -%}
-  </ul>
+      {%- endfor -%}
+   </ul>
 </section>
 <section id="demos" class="mb-4">
-  <h2 class="text-2xl my-1 cursor-pointer select-none">demos</h2>
-  <ul class="flex flex-col gap-y-1">
-    {%- for demo in collections.demo -%}
+   <h2 class="text-2xl my-1 cursor-pointer select-none">demos</h2>
+   <ul class="flex flex-col gap-y-1">
+      {%- for demo in collections.demo -%}
       <li>
-          <a class="font-bold" href="{{ demo.url }}">{{ demo.data.title }}</a>: {{ demo.data.desc }}
+         <a class="font-bold" href="{{ demo.url }}">{{ demo.data.title }}</a>: {{ demo.data.desc }}
       </li>
-    {%- endfor -%}
-  </ul>
+      {%- endfor -%}
+   </ul>
 </section>
 <section id="projects" class="mb-4">
-  <h2 class="text-2xl my-1 cursor-pointer select-none">projects</h2>
-  <ul class="flex flex-col gap-y-1">
+   <h2 class="text-2xl my-1 cursor-pointer select-none">projects</h2>
+   <ul class="flex flex-col gap-y-1">
       <li>
-          <a class="font-bold" href="https://github.com/tardy-org/zzz">zzz</a>: a
-          (mostly) HTTP/1.1 compliant web framework, written in Zig.
+         <a class="font-bold" href="https://github.com/tardy-org/zzz">zzz</a>: a
+         (mostly) HTTP/1.1 compliant web framework, written in Zig.
       </li>
       <li>
-          <a class="font-bold" href="https://github.com/tardy-org/tardy">tardy</a>: an
-          asynchronous runtime for writing services and applications, written in Zig.
-          async i/o support using io_uring, epoll and poll. coroutine support for
-          x86_64 (sysv + windows) and aarch64.
+         <a class="font-bold" href="https://github.com/tardy-org/tardy">tardy</a>: an
+         asynchronous runtime for writing services and applications, written in Zig.
+         async i/o support using io_uring, epoll and poll. coroutine support for
+         x86_64 (sysv + windows) and aarch64.
       </li>
-      <li>
-          <a class="font-bold" href="https://github.com/mookums/iguana">iguana</a>: a
-          library for building Zig projects with Nix.
-      </li>
-  </ul>
+   </ul>
 </section>
+
