@@ -23,7 +23,7 @@ export default async function(eleventyConfig) {
 
   eleventyConfig.addPlugin(feedPlugin, {
     type: "atom",
-    outputPath: "/feed.xml",
+    outputPath: "/public/feed.xml",
     collection: {
       name: "post",
     },

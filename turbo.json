@@ -11,7 +11,7 @@
             "dependsOn": ["@mukigg/truffle-wasm#build"],
             "inputs": ["src/_site/**/*"],
             "persistent": true,
-            "cache": true
+            "cache": false
         },
         "@mukigg/truffle-wasm#build": {
             "inputs": ["src/**/*.rs", "Cargo.toml"],
