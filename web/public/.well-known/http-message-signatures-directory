@@ -1,3 +1,11 @@
 {
-  "jwks_uri": "https://muki.gg/.well-known/jwks.json"
+  "keys": [
+    {
+      "kty": "OKP",
+      "crv": "Ed25519",
+      "kid": "c60af607-a472-40a6-b8ef-8bfd8e918503",
+      "use": "sig",
+      "x": "T8-kKAJ6k5jlPhOOuSl_h_kE_l9y9TrH5q-4bt60wfI"
+    }
+  ]
 }
