@@ -5,5 +5,12 @@ export default [
     data: {
       title: "Lightpanda Now Supports robots.txt",
     }
+  },
+  {
+    url: "https://lightpanda.io/blog/posts/web-bot-auth-support",
+    date: new Date("2026-03-20"),
+    data: {
+      title: "Web Bot Auth Support in Lightpanda",
+    }
   }
 ]
