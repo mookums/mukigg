@@ -65,7 +65,7 @@ pub fn htmlElement(self: *Factory, child: anytype) !*@TypeOf(child) {
     // ...
 }
 {% endhighlight %}
-  <img class="w-full" src="/assets/img/html_div_element_chain.svg" />
+  <img class="w-full" src="/assets/img/slab-allocator-browser/html_div_element_chain.svg" />
   <p>
     Imagine there is a <a class="hyper-blue" href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLDivElement">HTMLDivElement</a> being created.
     The Factory will call into the methods above where each one will allocate one of the structures required in the prototype chain,
@@ -76,7 +76,7 @@ pub fn htmlElement(self: *Factory, child: anytype) !*@TypeOf(child) {
     This minimized the impact of internal memory fragmentation as each item takes up only the space it needs
     (along with the padding required for alignment). This method however comes with a few tradeoffs.
   </p>
-  <img class="w-full" src="/assets/img/html_div_element_pool.svg" />
+  <img class="w-full" src="/assets/img/slab-allocator-browser/html_div_element_pool.svg" />
   <span class="text-xs">Each object in the prototype chain is allocated in a different memory pool.</span>
   <p>
     The result of each of these allocations residing in a seperate pool is significantly worse memory locality.
@@ -118,7 +118,7 @@ _size_648_8: MemoryPoolAligned([648]u8, .@"8"),
     This allocator internally manages a list of Slabs, where each Slab represents a unique size and alignment pair.
     This echoes the strategy used previously by the MemoryPools but eliminates the need to have a manually managed list of Pools.
   </p>
-  <img class="w-full" src="/assets/img/html_div_element_slab.svg" />
+  <img class="w-full" src="/assets/img/slab-allocator-browser/html_div_element_slab.svg" />
   <span class="text-xs">The object and all of its prototypes are allocated together with good locality.</span>
   <p>
     The Slab Allocator also came with a variety of changes to the Factory itself, mostly in the form of amoritized allocations for objects.
