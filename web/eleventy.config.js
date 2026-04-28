@@ -44,7 +44,7 @@ export default async function(eleventyConfig) {
 
   eleventyConfig.addPairedShortcode("section", function(content, id, title) {
     return `<section class="flex flex-col gap-y-4" id="${id}">
-        <h3 class="text-2xl">${title} <a class="hyper-blue" href="#${id}">#</a></h3>
+        <h3 class="text-xl sm:text-2xl">${title} <a class="hyper-blue" href="#${id}">#</a></h3>
         ${content}
       </section>`;
   });
