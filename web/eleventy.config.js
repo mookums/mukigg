@@ -30,7 +30,11 @@ export default async function(eleventyConfig) {
     metadata: {
       language: "en",
       title: "muki.gg",
+      subtitle: "Muki's Personal Library",
       base: "https://muki.gg",
+      author: {
+        name: "muki",
+      }
     }
   });
 
