@@ -49,6 +49,15 @@ export default async function(eleventyConfig) {
       </section>`;
   });
 
+  eleventyConfig.addPairedShortcode("note", function(content) {
+    return `<div class="border-2 border-blue-200 bg-blue-50 rounded-lg p-4">
+        <p class="flex flex-row gap-x-4 items-center">
+          <i class="text-blue-400 w-8 h-8" data-lucide="message-square"></i>
+          ${content}
+        </p>
+      </div>`;
+  });
+
   eleventyConfig.addCollection("post", function(collectionApi) {
     const localPosts = collectionApi.getFilteredByTag("post");
     const taggedExternalPosts = externalPosts.map(ep => ({
